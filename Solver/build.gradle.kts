@@ -26,8 +26,6 @@ extra["springGrpcVersion"] = "0.3.0"
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
 	implementation("org.springframework.boot:spring-boot-starter-jdbc")
-	implementation("org.springframework.boot:spring-boot-starter-web")
-	implementation("org.springframework.boot:spring-boot-starter-webflux")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("io.grpc:grpc-services")
 	implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
@@ -70,6 +68,13 @@ protobuf {
 					option("jakarta_omit")
 					option("@generated=omit")
 				}
+			}
+		}
+	}
+	sourceSets {
+		main {
+			proto {
+				srcDir("../proto")  // Указываем путь к общим .proto файлам в корневой папке (предполагаем, что папка с .proto файлами расположена в корне репозитория)
 			}
 		}
 	}

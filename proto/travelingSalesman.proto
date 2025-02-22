@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.example.grpc";
+option objc_class_prefix = "EX";
+
+package echo;
+
+// Сервис эхо
+service EchoService {
+  // Метод, который принимает сообщение и возвращает его обратно
+  rpc sayEcho (EchoRequest) returns (EchoResponse);
+}
+
+// Сообщение запроса
+message EchoRequest {
+  string message = 1;
+}
+
+// Сообщение ответа
+message EchoResponse {
+  string message = 1;
+}

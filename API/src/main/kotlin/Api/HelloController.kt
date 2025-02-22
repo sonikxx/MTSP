@@ -6,10 +6,10 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api")
-class HelloController {
+class HelloController(private val grpcClientService: GrpcClientService) {
 
     @GetMapping("/hello")
     fun sayHello(): String {
-        return "Hello, World!"
+        return grpcClientService.getEchoMessage("Hello from API! Cudaaaaa")
     }
 }
