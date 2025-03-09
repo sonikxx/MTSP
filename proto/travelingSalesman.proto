@@ -4,20 +4,29 @@ option java_multiple_files = true;
 option java_package = "com.example.grpc";
 option objc_class_prefix = "EX";
 
-package echo;
+package tsp;
 
-// Сервис эхо
-service EchoService {
-  // Метод, который принимает сообщение и возвращает его обратно
-  rpc sayEcho (EchoRequest) returns (EchoResponse);
+// Сервис для решения задачи коммивояжера
+service TspSolver {
+  rpc Solve (TspSolverRequest) returns (TspSolverResponse);
 }
 
-// Сообщение запроса
-message EchoRequest {
-  string message = 1;
+// Запрос с координатами городов
+message TspSolverRequest {
+  // Идентификатор запроса
+  string requestId = 1;
+  // Координаты городов
+  repeated City cities = 2;
 }
 
-// Сообщение ответа
-message EchoResponse {
-  string message = 1;
+// Ответ с оптимальным маршрутом
+message TspSolverResponse {
+  repeated City route = 1;
+}
+
+// Координаты города
+message City {
+  double x = 1;
+  double y = 2;
+  string name = 3;
 }

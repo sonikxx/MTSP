@@ -3,12 +3,120 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hello, Spring Boot!</title>
-    <link rel="stylesheet" href="/style.css">
+    <title>TSP Problem Solver</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            margin-top: 10px;
+        }
+        .city-list {
+            margin-top: 20px;
+        }
+        #map {
+            border: 1px solid black;
+            cursor: pointer;
+            margin-top: 20px;
+            width: 500px;
+            height: 500px;
+        }
+        .coordinates {
+            margin-top: 10px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Welcome to Spring Boot!</h1>
-        <p>This is a static page served by Spring Boot.</p>
-    <script src="/script.js"></script>
+<h1>Traveling Salesman Problem (TSP)</h1>
+<p>Click on the map to add cities to the route and send the request to solve the TSP problem.</p>
+
+<canvas id="map"></canvas>
+<button id="solveTSPButton">Solve TSP</button>
+
+<div class="coordinates">
+    <h3>Added Cities:</h3>
+    <ul id="cityList"></ul>
+</div>
+
+<script>
+    let cities = [];
+    const canvas = document.getElementById('map');
+    const ctx = canvas.getContext('2d');
+
+    // Set canvas size
+    canvas.width = 500;
+    canvas.height = 500;
+
+    // Draw grid or background (optional)
+    function drawGrid() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.beginPath();
+        for (let i = 0; i <= canvas.width; i += 50) {
+            ctx.moveTo(i, 0);
+            ctx.lineTo(i, canvas.height);
+        }
+        for (let i = 0; i <= canvas.height; i += 50) {
+            ctx.moveTo(0, i);
+            ctx.lineTo(canvas.width, i);
+        }
+        ctx.strokeStyle = "#ddd";
+        ctx.stroke();
+    }
+
+    drawGrid();
+
+    // Add a city on canvas click
+    canvas.addEventListener('click', function(event) {
+        const x = event.offsetX;
+        const y = event.offsetY;
+
+        // Add city to list
+        cities.push({ x: x, y: y });
+        updateCityList();
+
+        // Draw city point on canvas
+        ctx.beginPath();
+        ctx.arc(x, y, 5, 0, 2 * Math.PI);
+        ctx.fillStyle = 'blue';
+        ctx.fill();
+    });
+
+    // Solve TSP when button is clicked
+    document.getElementById('solveTSPButton').addEventListener('click', async function() {
+        if (cities.length < 2) {
+            console.log("Please add at least two cities to solve the problem.");
+            return;
+        }
+
+        const response = await fetch('/api/solve', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ cities: cities })
+        });
+
+        if (response.ok) {
+            const result = await response.json();
+            console.log("TSP Solution Route: " + JSON.stringify(result.route));
+        } else {
+            console.log("Error solving TSP.");
+        }
+    });
+
+    // Update city list
+    function updateCityList() {
+        const cityList = document.getElementById('cityList');
+        cityList.innerHTML = '';
+        cities.forEach(function(city, index) {
+            const li = document.createElement('li');
+            li.textContent = `City ${index + 1}: (${city.x.toFixed(2)}, ${city.y.toFixed(2)})`;
+            cityList.appendChild(li);
+        });
+    }
+</script>
+
 </body>
 </html>
