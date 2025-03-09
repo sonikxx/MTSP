@@ -17,7 +17,7 @@ class TspSolverService(private val tspAlgorithm: TspAlgorithm) : TspSolverGrpc.T
     override fun solve(request: TspSolverRequest, responseObserver: StreamObserver<TspSolverResponse>) {
         logger.info { "$request.requestId: Grpc Accepted request for solving!" }
         val cities = request.citiesList.map { Point(it.x, it.y) }
-        val route = tspAlgorithm.nearestNeighborTsp(request.requestId, cities)
+        val route = tspAlgorithm.bruteForceTsp(request.requestId, cities)
 
         val response = TspSolverResponse.newBuilder()
             .addAllRoute(route.map { City.newBuilder().setX(it.x).setY(it.y).build() })

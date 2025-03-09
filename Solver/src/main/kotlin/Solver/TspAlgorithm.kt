@@ -14,27 +14,56 @@ class TspAlgorithm {
         private val logger = KotlinLogging.logger {}
     }
 
-    fun nearestNeighborTsp(requestId: String, cities: List<Point>): List<Point> {
+    fun bruteForceTsp(requestId: String, cities: List<Point>): List<Point> {
         if (cities.isEmpty()) {
             logger.warn { "Empty list of cities" }
             return emptyList()
         }
-        logger.info { "$requestId: Start nearest neighbor algorithm" }
+        logger.info { "$requestId: Start brute force algorithm" }
 
-        val visited = mutableSetOf<Point>()
-        val route = mutableListOf(cities.first())
-        visited.add(cities.first())
+        val permutations = cities.permutations()
+        var shortestRoute = emptyList<Point>()
+        var minDistance = Double.MAX_VALUE
 
-        while (visited.size < cities.size) {
-            logger.info { "$requestId: Going to sleep for a 5 seconds" }
-            Thread.sleep(2000) // TODO: remove sleep. For testing only
-            val last = route.last()
-            val next = cities.filter { it !in visited }.minByOrNull { distance(last, it) } ?: break
-            visited.add(next)
-            route.add(next)
+        for (perm in permutations) {
+            val distance = calculateTotalDistance(perm)
+            if (distance < minDistance) {
+                minDistance = distance
+                shortestRoute = perm
+            }
         }
-        logger.info { "$requestId: End nearest neighbor algorithm" }
-        return route
+
+        logger.info { "$requestId: End brute force algorithm" }
+        return shortestRoute
     }
-    private fun distance(a: Point, b: Point): Double = sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y))
+
+    private fun calculateTotalDistance(route: List<Point>): Double {
+        var totalDistance = 0.0
+        for (i in 0 until route.size - 1) {
+            totalDistance += distance(route[i], route[i + 1])
+        }
+        // Add the distance from the last city back to the first city
+        totalDistance += distance(route.last(), route.first())
+        return totalDistance
+    }
+
+    private fun distance(a: Point, b: Point): Double =
+        sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y))
+
+    // Extension function to generate all permutations of a list
+    private fun <T> List<T>.permutations(): List<List<T>> {
+        if (this.isEmpty()) return listOf(emptyList())
+        val element = this[0]
+        val rest = this.drop(1)
+        val perms = rest.permutations()
+        val result = mutableListOf<List<T>>()
+        for (perm in perms) {
+            for (i in 0..perm.size) {
+                val newPerm = perm.toMutableList()
+                newPerm.add(i, element)
+                result.add(newPerm)
+            }
+        }
+        return result
+    }
 }
