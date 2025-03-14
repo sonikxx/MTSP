@@ -1,4 +1,4 @@
-package Solver
+package solver
 
 import com.example.grpc.City
 import com.example.grpc.TspSolverRequest
@@ -7,6 +7,7 @@ import com.example.grpc.TspSolverGrpc
 import io.grpc.stub.StreamObserver
 import mu.KotlinLogging
 import org.springframework.grpc.server.service.GrpcService
+import solver.dto.Point
 
 @GrpcService
 class TspSolverService(private val tspAlgorithm: TspAlgorithm) : TspSolverGrpc.TspSolverImplBase() {

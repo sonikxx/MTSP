@@ -1,12 +1,10 @@
-package Solver
+package solver
 
 import mu.KotlinLogging
-import org.springframework.context.annotation.Bean
 import org.springframework.stereotype.Service
+import solver.dto.Point
 import kotlin.math.sqrt
-data class TspRequestDto(val cities: List<Point>)
-data class TspResponseDto(val route: List<Point>)
-data class Point(val x: Double, val y: Double)
+
 
 @Service
 class TspAlgorithm {

@@ -43,7 +43,7 @@ dependencies {
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
 	// jwt staff
-	implementation("org.springframework.boot:spring-boot-starter-security")
+//	implementation("org.springframework.boot:spring-boot-starter-security")
 	implementation("io.jsonwebtoken:jjwt:0.12.3")
 	implementation("jakarta.servlet:jakarta.servlet-api:6.0.0")
 

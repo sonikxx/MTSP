@@ -5,9 +5,11 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.servlet.http.Cookie
+import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpStatus
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/auth")
 class AuthController(
     private val jwtTokenUtil: JwtTokenUtil
 ) {
@@ -25,10 +27,12 @@ class AuthController(
 
         response.addCookie(cookie)
 
-        return ResponseEntity.ok("Login successful, JWT set in cookie")
+        return ResponseEntity.status(HttpStatus.FOUND)
+            .header(HttpHeaders.LOCATION, "/main/123")
+            .build()
     }
 
-    @PostMapping("/logout")
+    @GetMapping("/logout")
     fun logout(response: HttpServletResponse): ResponseEntity<String> {
         val cookie = Cookie("JWT", "").apply {
             path = "/"
@@ -39,6 +43,8 @@ class AuthController(
 
         response.addCookie(cookie)
 
-        return ResponseEntity.ok("Logged out, JWT removed")
+        return ResponseEntity.status(HttpStatus.FOUND)
+            .header(HttpHeaders.LOCATION, "/")
+            .build()
     }
 }

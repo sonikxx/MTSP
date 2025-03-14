@@ -1,10 +1,10 @@
-import Solver.Point
-import Solver.SolverApplication
-import Solver.TspAlgorithm
+import solver.SolverApplication
+import solver.TspAlgorithm
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
+import solver.dto.Point
 
 
 @SpringBootTest(classes = [SolverApplication::class])

@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RestController
 
 
 @RestController
-@RequestMapping("/api")
-class HelloController(private val grpcClientService: GrpcClientService) {
+@RequestMapping("/protected")
+class SolveController(private val grpcClientService: GrpcClientService) {
     companion object {
         private val logger = KotlinLogging.logger {}
     }
@@ -21,7 +21,4 @@ class HelloController(private val grpcClientService: GrpcClientService) {
         logger.info { "Received request!" }
         return grpcClientService.solveTsp(request)
     }
-
-
-
 }

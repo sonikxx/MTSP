@@ -38,7 +38,6 @@ class GrpcClientService {
     }
 
 
-    // Не забудьте закрыть канал при завершении работы приложения
     @PreDestroy
     fun shutdown() {
         grpcChannel.shutdown()
