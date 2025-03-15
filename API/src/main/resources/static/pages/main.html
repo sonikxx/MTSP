@@ -13,9 +13,6 @@
             padding: 10px 20px;
             margin-top: 10px;
         }
-        .city-list {
-            margin-top: 20px;
-        }
         #map {
             border: 1px solid black;
             cursor: pointer;
@@ -45,11 +42,9 @@
     const canvas = document.getElementById('map');
     const ctx = canvas.getContext('2d');
 
-    // Set canvas size
     canvas.width = 500;
     canvas.height = 500;
 
-    // Draw grid or background (optional)
     function drawGrid() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.beginPath();
@@ -83,7 +78,6 @@
         ctx.fill();
     });
 
-    // Solve TSP when button is clicked
     document.getElementById('solveTSPButton').addEventListener('click', async function() {
         if (cities.length < 2) {
             console.log("Please add at least two cities to solve the problem.");

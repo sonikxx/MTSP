@@ -1,5 +1,6 @@
 package api
 
+import api.config.BackendConfig
 import api.dto.Point
 import api.dto.TspRequestDto
 import api.dto.TspResponseDto
@@ -7,20 +8,17 @@ import com.example.grpc.City
 import io.grpc.ManagedChannelBuilder
 import org.springframework.stereotype.Service
 import com.example.grpc.TspSolverRequest
-import mu.KotlinLogging
 import com.example.grpc.TspSolverGrpc
 import jakarta.annotation.PreDestroy
 import java.util.*
 
 
 @Service
-class GrpcClientService {
+class GrpcClientService(
+    private val backendConfig: BackendConfig
+) {
 
-    companion object {
-        private val logger = KotlinLogging.logger {}
-    }
-
-    private val grpcChannel = ManagedChannelBuilder.forAddress("localhost", 9090)
+    private val grpcChannel = ManagedChannelBuilder.forAddress(backendConfig.mtsp.host, backendConfig.mtsp.port)
         .usePlaintext()  // Отключаем шифрование (для теста можно использовать)
         .build()
 

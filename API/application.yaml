@@ -1,0 +1,7 @@
+backend:
+  rps:
+    host: localhost
+    port: 6969
+  mtsp:
+    host: localhost
+    port: 9090

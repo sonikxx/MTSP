@@ -32,9 +32,11 @@ class PageController {
     }
 
     @GetMapping("main/{organization}")
-    fun mainPage(@PathVariable organization: String): ResponseEntity<String> {
+    fun mainPage(@PathVariable organization: String): ResponseEntity<Resource> {
         logger.info { "request main page for organization: $organization" }
-        return ResponseEntity.ok("Вы на странице организации: $organization")
+        val file = ClassPathResource("static/pages/main.html")
+        return ResponseEntity.ok().contentType(MediaType.TEXT_HTML).body(file)
+//        return ResponseEntity.ok("Вы на странице организации: $organization")
     }
 }
 

@@ -28,7 +28,7 @@ class AuthController(
         response.addCookie(cookie)
 
         return ResponseEntity.status(HttpStatus.FOUND)
-            .header(HttpHeaders.LOCATION, "/main/123")
+            .header(HttpHeaders.LOCATION, "/main/${request.organizationId}")
             .build()
     }
 
