@@ -3,6 +3,9 @@ package solver
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
 import solver.dto.Point
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlin.math.min
 import kotlin.math.sqrt
 
 
@@ -35,6 +38,43 @@ class TspAlgorithm {
         return shortestRoute
     }
 
+    fun solveMtsp(cities: List<Point>, numSalesmen: Int) : Flow<Map<Int, List<Point>>> = flow {
+        logger.info { "Start MTSP algorithm" }
+        if (numSalesmen <= 0 || cities.isEmpty()) return@flow
+
+        val allPermutations = cities.permutations()
+
+        for (perm in allPermutations) {
+            val allDistributions = distributeAmongSalesmen(numSalesmen, perm)
+            for (solution in allDistributions) {
+                emit(solution)
+            }
+        }
+        logger.info { "End MTSP algorithm" }
+    }
+
+    private fun distributeAmongSalesmen(salesmen: Int, points: List<Point>): Sequence<Map<Int, List<Point>>> = sequence {
+        val maxPartitionSize = points.size / salesmen
+        for (partition in generatePartitions(points, salesmen, maxPartitionSize)) {
+            yield(partition)
+        }
+    }
+
+    private fun generatePartitions(points: List<Point>, salesmen: Int, maxSize: Int): Sequence<Map<Int, List<Point>>> = sequence {
+        if (salesmen == 1) {
+            yield(mapOf(0 to points))
+        } else {
+            val maxIndex = min(points.size, maxSize)
+            for (i in 1..maxIndex) {
+                val firstPartition = points.take(i)
+                val remaining = points.drop(i)
+                for (subPartition in generatePartitions(remaining, salesmen - 1, maxSize)) {
+                    yield(mapOf(0 to firstPartition) + subPartition.mapKeys { it.key + 1 })
+                }
+            }
+        }
+    }
+
     private fun calculateTotalDistance(route: List<Point>): Double {
         var totalDistance = 0.0
         for (i in 0 until route.size - 1) {
@@ -49,19 +89,16 @@ class TspAlgorithm {
         sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y))
 
     // Extension function to generate all permutations of a list
-    private fun <T> List<T>.permutations(): List<List<T>> {
-        if (this.isEmpty()) return listOf(emptyList())
-        val element = this[0]
-        val rest = this.drop(1)
-        val perms = rest.permutations()
-        val result = mutableListOf<List<T>>()
-        for (perm in perms) {
-            for (i in 0..perm.size) {
-                val newPerm = perm.toMutableList()
-                newPerm.add(i, element)
-                result.add(newPerm)
+    private fun<T> List<T>.permutations(): Sequence<List<T>> = sequence {
+        if (isEmpty()) yield(emptyList())
+        else {
+            for (i in indices) {
+                val elem = this@permutations[i]
+                val rest = this@permutations - elem
+                for (perm in rest.permutations()) {
+                    yield(listOf(elem) + perm)
+                }
             }
         }
-        return result
     }
 }

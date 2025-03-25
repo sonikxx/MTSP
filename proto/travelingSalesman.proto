@@ -1,30 +1,32 @@
 syntax = "proto3";
 
+package mtsp;
+
 option java_multiple_files = true;
 option java_package = "com.example.grpc";
 option objc_class_prefix = "EX";
 
-package tsp;
 
-// Сервис для решения задачи коммивояжера
-service TspSolver {
-  rpc Solve (TspSolverRequest) returns (TspSolverResponse);
+service MtspSolver {
+  rpc Solve (MtspSolverRequest) returns (stream MtspSolverResponse);
 }
 
-// Запрос с координатами городов
-message TspSolverRequest {
-  // Идентификатор запроса
-  string requestId = 1;
-  // Координаты городов
+message MtspSolverRequest {
+  string request_id = 1;
   repeated City cities = 2;
+  int32 num_salesmen = 3;
 }
 
-// Ответ с оптимальным маршрутом
-message TspSolverResponse {
-  repeated City route = 1;
+message MtspSolverResponse {
+  repeated SalesmanRoute routes = 1;
+  optional string debug_info = 2;
 }
 
-// Координаты города
+message SalesmanRoute {
+  int32 salesman_id = 1;
+  repeated City route = 2;
+}
+
 message City {
   double x = 1;
   double y = 2;

@@ -28,9 +28,12 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-jdbc")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("io.grpc:grpc-services")
+	implementation("io.grpc:grpc-kotlin-stub:1.4.1")
+	implementation("com.google.protobuf:protobuf-kotlin:3.25.3")
 	implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
+	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
 	implementation("org.springframework.grpc:spring-grpc-spring-boot-starter")
 	implementation("io.github.microutils:kotlin-logging-jvm:3.0.5")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
@@ -61,6 +64,9 @@ protobuf {
 		id("grpc") {
 			artifact = "io.grpc:protoc-gen-grpc-java"
 		}
+		id("grpckt") {
+			artifact = "io.grpc:protoc-gen-grpc-kotlin:1.4.1:jdk8@jar"
+		}
 	}
 	generateProtoTasks {
 		all().forEach {
@@ -69,6 +75,7 @@ protobuf {
 					option("jakarta_omit")
 					option("@generated=omit")
 				}
+				id("grpckt")
 			}
 		}
 	}
