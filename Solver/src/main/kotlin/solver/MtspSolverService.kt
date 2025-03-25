@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.flow
 import mu.KotlinLogging
 import org.springframework.grpc.server.service.GrpcService
 import solver.dto.Point
+import java.lang.Thread.sleep
 
 @GrpcService
 class MtspSolverService(private val tspAlgorithm: TspAlgorithm) : MtspSolverGrpcKt.MtspSolverCoroutineImplBase() {
@@ -37,8 +38,12 @@ class MtspSolverService(private val tspAlgorithm: TspAlgorithm) : MtspSolverGrpc
         }
         val numSalesmen = request.numSalesmen
 
+        Thread.sleep(5000)
+
         tspAlgorithm.solveMtsp(cities, numSalesmen)
             .collect { solution ->
+                logger.info { "${request.requestId}: gRPC Response sent for MTSP solving!" }
+                Thread.sleep(2000)
                 val response = MtspSolverResponse.newBuilder().apply {
                     solution.forEach { (salesmanId, route) ->
                         addRoutes(

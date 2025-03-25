@@ -60,6 +60,11 @@
         ctx.stroke();
     }
 
+    function createCityName(index) {
+        const allNames = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
+        return allNames[index];
+    }
+
     drawGrid();
 
     // Add a city on canvas click
@@ -68,12 +73,15 @@
         const y = event.offsetY;
 
         // Add city to list
-        cities.push({ x: x, y: y });
+        cities.push({ name: createCityName(cities.length), x: x, y: y });
         updateCityList();
 
         // Draw city point on canvas
         ctx.beginPath();
         ctx.arc(x, y, 5, 0, 2 * Math.PI);
+        ctx.fillStyle = 'black';
+        ctx.font = 'bold 25px Arial';
+        ctx.fillText(cities[cities.length - 1].name, x + 10, y + 10);
         ctx.fillStyle = 'blue';
         ctx.fill();
     });
@@ -89,7 +97,7 @@
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ cities: cities })
+            body: JSON.stringify({ salesmanNumber: 2, cities: cities })
         });
 
         if (response.ok) {
