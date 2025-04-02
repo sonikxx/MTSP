@@ -7,6 +7,7 @@ import org.springframework.web.servlet.HandlerInterceptor
 
 @Component
 class JwtInterceptor(private val jwtUtil: JwtTokenUtil) : HandlerInterceptor {
+
     override fun preHandle(request: HttpServletRequest, response: HttpServletResponse, handler: Any): Boolean {
         val claims = jwtUtil.getClaims(request)
         if (claims == null) {

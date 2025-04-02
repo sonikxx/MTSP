@@ -1,14 +1,16 @@
 package api.security
-import io.jsonwebtoken.*
+import io.jsonwebtoken.Claims
+import io.jsonwebtoken.JwtException
+import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
 import jakarta.servlet.http.HttpServletRequest
-import jakarta.servlet.http.HttpServletResponse
 import org.springframework.stereotype.Component
-import java.util.*
+import java.util.Date
 
 @Component
 class JwtTokenUtil {
 
+    // TODO вынести в yml
     private val expirationTime = 3600000 // 1 час
     private val secretKey = "MySuperSecretKeyForJWTWhichShouldBeLongEnough"
 
@@ -42,7 +44,7 @@ class JwtTokenUtil {
         val token = request.cookies?.firstOrNull { it.name == "JWT" }?.value
 
         if (token.isNullOrBlank() || !validateToken(token)) {
-           return null
+            return null
         }
         return token
     }
@@ -52,7 +54,7 @@ class JwtTokenUtil {
     }
 
     fun getClaims(request: HttpServletRequest): Claims? {
-        val token = getToken(request)?: return null
+        val token = getToken(request) ?: return null
         return getClaims(token)
     }
 }

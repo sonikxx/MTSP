@@ -1,7 +1,6 @@
-package api
+package api.controller
 
-import mu.KotlinLogging
-import org.springframework.core.io.ClassPathResource
+import api.service.PageService
 import org.springframework.core.io.Resource
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -12,31 +11,28 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/")
-class PageController {
-    companion object {
-        private val logger = KotlinLogging.logger {}
-    }
+class PageController(
+    private val pageService: PageService
+) {
 
     @GetMapping
     fun index(): ResponseEntity<Resource> {
-        logger.info { "request index page" }
-        val file = ClassPathResource("static/pages/index.html")
+        val file = pageService.index()
+
         return ResponseEntity.ok().contentType(MediaType.TEXT_HTML).body(file)
     }
 
     @GetMapping("login")
     fun login(): ResponseEntity<Resource> {
-        logger.info { "request login page" }
-        val file = ClassPathResource("static/pages/login.html")
+        val file = pageService.login()
+
         return ResponseEntity.ok().contentType(MediaType.TEXT_HTML).body(file)
     }
 
-    @GetMapping("main/{organization}")
-    fun mainPage(@PathVariable organization: String): ResponseEntity<Resource> {
-        logger.info { "request main page for organization: $organization" }
-        val file = ClassPathResource("static/pages/main.html")
+    @GetMapping("main/{organizationId}")
+    fun mainPage(@PathVariable organizationId: String): ResponseEntity<Resource> {
+        val file = pageService.mainPage(organizationId)
+
         return ResponseEntity.ok().contentType(MediaType.TEXT_HTML).body(file)
-//        return ResponseEntity.ok("Вы на странице организации: $organization")
     }
 }
-

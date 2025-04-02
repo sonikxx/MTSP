@@ -1,3 +1,6 @@
 package api.dto
 
-data class LoginRequest(val userId: Long, val organizationId: Long, val isAdmin: Boolean)
+data class LoginRequest(
+    val email: String,
+    val password: String
+)
