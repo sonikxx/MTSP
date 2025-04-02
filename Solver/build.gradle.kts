@@ -24,6 +24,11 @@ repositories {
 extra["springGrpcVersion"] = "0.3.0"
 
 dependencies {
+	// kafka start
+	implementation("org.springframework.kafka:spring-kafka")
+	// kafka json parser
+	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+	// kafka end
 	implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
 	implementation("org.springframework.boot:spring-boot-starter-jdbc")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")

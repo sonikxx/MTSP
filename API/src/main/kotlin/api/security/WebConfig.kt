@@ -16,6 +16,6 @@ class WebConfig(
             .addPathPatterns("/protected/**", "/organization/**", "/main/**")
 
         registry.addInterceptor(rateLimiterFilter)
-         .addPathPatterns("/**")
+            .addPathPatterns("/**")
     }
 }

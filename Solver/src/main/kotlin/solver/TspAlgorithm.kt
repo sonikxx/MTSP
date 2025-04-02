@@ -5,82 +5,70 @@ import org.springframework.stereotype.Service
 import solver.dto.Point
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import solver.dto.Solution
 import kotlin.math.min
 import kotlin.math.sqrt
 
 
 @Service
 class TspAlgorithm {
-    companion object {
-        private val logger = KotlinLogging.logger {}
-    }
 
-    fun bruteForceTsp(requestId: String, cities: List<Point>): List<Point> {
-        if (cities.isEmpty()) {
-            logger.warn { "Empty list of cities" }
-            return emptyList()
-        }
-        logger.info { "$requestId: Start brute force algorithm" }
-
-        val permutations = cities.permutations()
-        var shortestRoute = emptyList<Point>()
-        var minDistance = Double.MAX_VALUE
-
-        for (perm in permutations) {
-            val distance = calculateTotalDistance(perm)
-            if (distance < minDistance) {
-                minDistance = distance
-                shortestRoute = perm
-            }
-        }
-
-        logger.info { "$requestId: End brute force algorithm" }
-        return shortestRoute
-    }
-
-    fun solveMtsp(cities: List<Point>, numSalesmen: Int) : Flow<Map<Int, List<Point>>> = flow {
+    fun solveMtsp(cities: List<Point>, numSalesmen: Int) : Flow<Solution> = flow {
         logger.info { "Start MTSP algorithm" }
         if (numSalesmen <= 0 || cities.isEmpty()) return@flow
 
         val allPermutations = cities.permutations()
-
+        val bestResult = Solution(emptyList(), -1, Double.MAX_VALUE)
         for (perm in allPermutations) {
             val allDistributions = distributeAmongSalesmen(numSalesmen, perm)
             for (solution in allDistributions) {
-                emit(solution)
+                val totalDistance = calculateTotalDistance1(solution)
+                if (totalDistance < bestResult.totalDistance) {
+                    bestResult.totalDistance = totalDistance
+                    bestResult.cities = solution
+                    logger.info { "New best result: $bestResult" }
+                }
+                emit(bestResult)
             }
         }
         logger.info { "End MTSP algorithm" }
     }
 
-    private fun distributeAmongSalesmen(salesmen: Int, points: List<Point>): Sequence<Map<Int, List<Point>>> = sequence {
+    private fun distributeAmongSalesmen(salesmen: Int, points: List<Point>): Sequence<List<List<Point>>> = sequence {
         val maxPartitionSize = points.size / salesmen
         for (partition in generatePartitions(points, salesmen, maxPartitionSize)) {
             yield(partition)
         }
     }
 
-    private fun generatePartitions(points: List<Point>, salesmen: Int, maxSize: Int): Sequence<Map<Int, List<Point>>> = sequence {
+    private fun generatePartitions(points: List<Point>, salesmen: Int, maxSize: Int): Sequence<List<List<Point>>> = sequence {
         if (salesmen == 1) {
-            yield(mapOf(0 to points))
+            yield(listOf(points))
         } else {
             val maxIndex = min(points.size, maxSize)
             for (i in 1..maxIndex) {
                 val firstPartition = points.take(i)
                 val remaining = points.drop(i)
                 for (subPartition in generatePartitions(remaining, salesmen - 1, maxSize)) {
-                    yield(mapOf(0 to firstPartition) + subPartition.mapKeys { it.key + 1 })
+                    yield(listOf(firstPartition) + subPartition)
                 }
             }
         }
     }
 
-    private fun calculateTotalDistance(route: List<Point>): Double {
+    private fun calculateTotalDistance1(routes: List<List<Point>>): Double {
+        var totalDistance = 0.0
+        for (route in routes) {
+            totalDistance += calculateTotalDistance2(route)
+        }
+        return totalDistance
+    }
+
+    private fun calculateTotalDistance2(route: List<Point>): Double {
         var totalDistance = 0.0
         for (i in 0 until route.size - 1) {
             totalDistance += distance(route[i], route[i + 1])
         }
-        // Add the distance from the last city back to the first city
         totalDistance += distance(route.last(), route.first())
         return totalDistance
     }
@@ -100,5 +88,9 @@ class TspAlgorithm {
                 }
             }
         }
+    }
+
+    companion object {
+        private val logger = KotlinLogging.logger {}
     }
 }

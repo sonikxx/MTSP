@@ -3,6 +3,7 @@ package api.controller
 import api.dto.MtspRequest
 import api.dto.MtspResponse
 import api.dto.MtspResponseAccept
+import api.dto.MtspSolverRequest
 import api.kafka.RequestProducer
 import mu.KotlinLogging
 import org.springframework.web.bind.annotation.GetMapping
@@ -21,11 +22,8 @@ class SolveController(private val requestProducer: RequestProducer) {
     fun solve(@RequestBody request: MtspRequest): MtspResponseAccept {
         val requestId = UUID.randomUUID().toString()
         logger.info { "Sending request to backend with id $requestId" }
-        val data = mapOf(
-            "requestId" to requestId,
-            "request" to request.toString()
-        )
-        requestProducer.sendTask(data.toString())
+
+        requestProducer.sendTask(MtspSolverRequest(requestId, request.cities, request.salesmanNumber))
         return MtspResponseAccept(requestId)
     }
 

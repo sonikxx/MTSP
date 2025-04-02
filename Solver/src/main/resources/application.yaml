@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: Solver
+#  datasource:
+#    #    url: jdbc:postgresql://rc1b-6byyaq851eo4h8wd.mdb.yandexcloud.net:6432/mtsp
+#    url: jdbc:postgresql://localhost:5432/mtsp
+#    username: mtsp_solver
+#    password: 12345678
+#    driver-class-name: org.postgresql.Driver
+  #  jpa:
+  #    show-sql: true
+  #    hibernate:
+  #      ddl-auto: update
+  #    database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: mtsp-group
+      auto-offset-reset: earliest
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
