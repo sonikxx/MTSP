@@ -1,6 +1,7 @@
 body {
+    background-color: #121212;
+    color: #ffffff;
     font-family: Arial, sans-serif;
-    background-color: #f0f0f0;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -8,53 +9,48 @@ body {
     margin: 0;
 }
 
-form {
-    background-color: #fff;
+.login-container {
+    background-color: #1e1e1e;
     padding: 20px;
     border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
     width: 300px;
+    text-align: center;
+}
+
+h2 {
+    margin-bottom: 20px;
+}
+
+form {
     display: flex;
     flex-direction: column;
 }
 
-h2 {
-    text-align: center;
-    margin-bottom: 20px;
-}
-
 label {
-    margin-bottom: 10px;
-    font-size: 14px;
+    margin-bottom: 5px;
+    text-align: left;
 }
 
-input[type="text"], input[type="password"] {
+input {
     padding: 10px;
-    margin-top: 5px;
     margin-bottom: 15px;
-    border: 1px solid #ccc;
+    border: 1px solid #333;
     border-radius: 4px;
-    font-size: 14px;
-    width: 100%;
+    background-color: #252525;
+    color: #ffffff;
 }
 
 button {
-    padding: 10px;
-    background-color: #4CAF50;
+    background-color: #6200ea;
     color: white;
+    padding: 10px;
     border: none;
     border-radius: 4px;
-    font-size: 16px;
     cursor: pointer;
-    width: 100%;
+    font-size: 16px;
 }
 
 button:hover {
-    background-color: #45a049;
-}
-
-.error-message {
-    color: red;
-    text-align: center;
-    margin-top: 10px;
+    background-color: #3700b3;
 }
