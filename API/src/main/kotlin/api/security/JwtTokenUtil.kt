@@ -1,4 +1,5 @@
 package api.security
+import api.config.JwtProperties
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.JwtException
 import io.jsonwebtoken.Jwts
@@ -8,25 +9,22 @@ import org.springframework.stereotype.Component
 import java.util.Date
 
 @Component
-class JwtTokenUtil {
-
-    // TODO вынести в yml
-    private val expirationTime = 3600000 // 1 час
-    private val secretKey = "MySuperSecretKeyForJWTWhichShouldBeLongEnough"
-
-    private val key = Keys.hmacShaKeyFor(secretKey.toByteArray())
+class JwtTokenUtil(
+    private val jwtProperties: JwtProperties
+) {
+    private val key = Keys.hmacShaKeyFor(jwtProperties.secretKey.toByteArray())
 
     fun generateToken(userId: Long, organizationId: Long, isAdmin: Boolean): String {
         return Jwts.builder()
             .claims(
                 mutableMapOf(
-                    "userId" to userId,
-                    "organizationId" to organizationId,
-                    "isAdmin" to isAdmin
+                    USER_ID to userId,
+                    ORGANIZATION_ID to organizationId,
+                    IS_ADMIN to isAdmin
                 )
             )
             .issuedAt(Date())
-            .expiration(Date(System.currentTimeMillis() + expirationTime))
+            .expiration(Date(System.currentTimeMillis() + jwtProperties.cookie.maxAge))
             .signWith(key)
             .compact()
     }
@@ -41,7 +39,7 @@ class JwtTokenUtil {
     }
 
     fun getToken(request: HttpServletRequest): String? {
-        val token = request.cookies?.firstOrNull { it.name == "JWT" }?.value
+        val token = request.cookies?.firstOrNull { it.name == jwtProperties.cookie.name }?.value
 
         if (token.isNullOrBlank() || !validateToken(token)) {
             return null
@@ -56,5 +54,11 @@ class JwtTokenUtil {
     fun getClaims(request: HttpServletRequest): Claims? {
         val token = getToken(request) ?: return null
         return getClaims(token)
+    }
+
+    companion object {
+        private const val USER_ID = "userId"
+        private const val ORGANIZATION_ID = "organizationId"
+        private const val IS_ADMIN = "isAdmin"
     }
 }

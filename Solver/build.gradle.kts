@@ -28,10 +28,11 @@ dependencies {
 	implementation("org.springframework.kafka:spring-kafka")
 	// kafka json parser
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-	// kafka end
-	implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
-	implementation("org.springframework.boot:spring-boot-starter-jdbc")
-	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+	// spring data JPA
+	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+	// database staff start
+	implementation("org.postgresql:postgresql")
+	// other
 	implementation("io.grpc:grpc-services")
 	implementation("io.grpc:grpc-kotlin-stub:1.4.1")
 	implementation("com.google.protobuf:protobuf-kotlin:3.25.3")

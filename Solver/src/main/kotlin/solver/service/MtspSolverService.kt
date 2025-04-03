@@ -1,15 +1,20 @@
-package solver
+package solver.service
 
 import io.grpc.Status
 import io.grpc.StatusException
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
+import solver.dto.MtspSolution
 import solver.dto.MtspSolverRequest
 import solver.dto.Point
-import java.lang.Thread.sleep
+import solver.repository.MtspSolutionRepository
+import java.time.Instant
 
 @Service
-class MtspSolverService(private val tspAlgorithm: TspAlgorithm) {
+class MtspSolverService(
+    private val tspAlgorithm: TspAlgorithm,
+    private val mtspSolutionRepository: MtspSolutionRepository,
+) {
 
     suspend fun solve(request: MtspSolverRequest) {
         logger.info { "${request.requestId}: gRPC Request received for MTSP solving!" }
@@ -36,31 +41,24 @@ class MtspSolverService(private val tspAlgorithm: TspAlgorithm) {
 //        Thread.sleep(5000)
 //        tspAlgorithm.solveMtsp(cities, numSalesmen)
 
+        val startTime = Instant.now()
+        val currentSolution = MtspSolution(
+            userId = 1,
+            requestId = request.requestId,
+            totalCost = 0.0,
+            createdAt = startTime,
+        )
+
         tspAlgorithm.solveMtsp(cities, numSalesmen)
             .collect { solution ->
                 logger.info { "${request.requestId}: gRPC Response sent for MTSP solving!" }
                 logger.info { "best = ${solution.totalDistance} for: ${solution.cities}" }
-                Thread.sleep(1000)
-//                val response = MtspSolverResponse.newBuilder().apply {
-//                    solution.forEach { (salesmanId, route) ->
-//                        addRoutes(
-//                            SalesmanRoute.newBuilder().apply {
-//                                this.salesmanId = salesmanId
-//                                route.forEach { city ->
-//                                    addRoute(
-//                                        City.newBuilder()
-//                                            .setX(city.x)
-//                                            .setY(city.y)
-//                                            .setName(request.citiesList[city.id].name)
-//                                            .build()
-//                                    )
-//                                }
-//                            }.build()
-//                        )
-//                    }
-//                }.build()
-//                emit(response)
-                // TODO: db insert
+
+                currentSolution.totalCost = solution.totalDistance
+                currentSolution.completedAt = Instant.now()
+
+                mtspSolutionRepository.save(currentSolution)
+                Thread.sleep(100)
             }
         logger.info { "${request.requestId}: gRPC Streaming completed!" }
     }

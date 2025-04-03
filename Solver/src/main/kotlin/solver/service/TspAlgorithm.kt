@@ -1,11 +1,11 @@
-package solver
+package solver.service
 
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
 import solver.dto.Point
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import solver.dto.Solution
+import solver.dto.AlgorithmSolution
 import kotlin.math.min
 import kotlin.math.sqrt
 
@@ -13,12 +13,12 @@ import kotlin.math.sqrt
 @Service
 class TspAlgorithm {
 
-    fun solveMtsp(cities: List<Point>, numSalesmen: Int) : Flow<Solution> = flow {
+    fun solveMtsp(cities: List<Point>, numSalesmen: Int) : Flow<AlgorithmSolution> = flow {
         logger.info { "Start MTSP algorithm" }
         if (numSalesmen <= 0 || cities.isEmpty()) return@flow
 
         val allPermutations = cities.permutations()
-        val bestResult = Solution(emptyList(), -1, Double.MAX_VALUE)
+        val bestResult = AlgorithmSolution(emptyList(), -1, Double.MAX_VALUE)
         for (perm in allPermutations) {
             val allDistributions = distributeAmongSalesmen(numSalesmen, perm)
             for (solution in allDistributions) {
@@ -27,10 +27,11 @@ class TspAlgorithm {
                     bestResult.totalDistance = totalDistance
                     bestResult.cities = solution
                     logger.info { "New best result: $bestResult" }
+                    emit(bestResult)
                 }
-                emit(bestResult)
             }
         }
+        // TODO: track the last result and emit it when the algorithm is finished (to store in DB status = SOLVED)
         logger.info { "End MTSP algorithm" }
     }
 

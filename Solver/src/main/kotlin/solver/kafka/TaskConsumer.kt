@@ -4,14 +4,16 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import mu.KotlinLogging
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.stereotype.Service
-import solver.MtspSolverService
+import solver.service.MtspSolverService
 import solver.dto.MtspSolverRequest
 
 @Service
-class TaskConsumer(private val mtspSolverService: MtspSolverService) {
+class TaskConsumer(
+    private val mtspSolverService: MtspSolverService
+) {
     private val objectMapper = jacksonObjectMapper()
 
-    @KafkaListener(topics = ["mtsp-tasks"], groupId = "mtsp-group")
+    @KafkaListener(topics = [TOPIC], groupId = GROUP_ID)
     suspend fun consumeTask(message: String) {
         logger.info { "Received task: $message" }
         try {
@@ -25,5 +27,7 @@ class TaskConsumer(private val mtspSolverService: MtspSolverService) {
 
     companion object {
         private val logger = KotlinLogging.logger {}
+        private const val TOPIC = "mtsp-tasks"
+        private const val GROUP_ID = "mtsp-group"
     }
 }

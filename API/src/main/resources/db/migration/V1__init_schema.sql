@@ -22,7 +22,8 @@ CREATE TABLE mtsp_users (
 CREATE TYPE mtsp_request_status AS ENUM ('QUEUED', 'INTERMEDIATE', 'SOLVED', 'FAILED');
 
 CREATE TABLE mtsp_solutions (
-                                id SERIAL PRIMARY KEY,  -- Changed from UUID to SERIAL
+                                id SERIAL PRIMARY KEY,
+                                request_id VARCHAR(40) NOT NULL,
                                 user_id INT NOT NULL,
                                 status mtsp_request_status NOT NULL DEFAULT 'QUEUED',
                                 total_cost DOUBLE PRECISION,
@@ -33,10 +34,10 @@ CREATE TABLE mtsp_solutions (
 );
 
 CREATE TABLE mtsp_routes (
-                             id SERIAL PRIMARY KEY,  -- Added primary key
+                             id SERIAL PRIMARY KEY,
                              solution_id INT NOT NULL,
                              salesman_index INT NOT NULL CHECK (salesman_index >= 0),
-                             points TEXT[] NOT NULL,  -- Array of point names
+                             points TEXT NOT NULL,
 
                              FOREIGN KEY (solution_id) REFERENCES mtsp_solutions(id) ON DELETE CASCADE
 );

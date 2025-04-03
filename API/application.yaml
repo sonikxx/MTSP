@@ -2,6 +2,11 @@ backend:
   rps:
     host: localhost
     port: 6969
-  mtsp:
-    host: localhost
-    port: 9090
+  jwt:
+    secretKey: "MySuperSecretKeyForJWTWhichShouldBeLongEnough"
+    cookie:
+      name: "JWT"
+      path: "/"
+      is-http-only: true
+      secure: true
+      max-age: 3600000

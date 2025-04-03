@@ -1,5 +1,6 @@
 package api.controller
 
+import api.config.JwtProperties
 import api.dto.LoginRequest
 import api.security.JwtTokenUtil
 import api.service.AuthService
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/auth")
 class AuthController(
     private val jwtTokenUtil: JwtTokenUtil,
+    private val jwtProperties: JwtProperties,
     private val authService: AuthService
 ) {
 
@@ -31,26 +33,26 @@ class AuthController(
             password = request.password
         ) ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials")
 
-        val token = jwtTokenUtil.generateToken(user.id, user.organizationId, user.isAdmin)
-        val cookie = Cookie("JWT", token).apply {
-            path = "/"
-            isHttpOnly = true
-            secure = true
-            maxAge = 3600 // 1 час
+        val token = jwtTokenUtil.generateToken(user.id, user.organization.id, user.isAdmin)
+        val cookie = Cookie(jwtProperties.cookie.name, token).apply {
+            path = jwtProperties.cookie.path
+            isHttpOnly = jwtProperties.cookie.isHttpOnly
+            secure = jwtProperties.cookie.secure
+            maxAge = jwtProperties.cookie.maxAge
         }
         response.addCookie(cookie)
 
         return ResponseEntity.status(HttpStatus.FOUND)
-            .header(HttpHeaders.LOCATION, "/main/${user.organizationId}")
+            .header(HttpHeaders.LOCATION, "/main/${user.organization.id}")
             .build()
     }
 
     @GetMapping("/logout")
     fun logout(response: HttpServletResponse): ResponseEntity<String> {
-        val cookie = Cookie("JWT", "").apply {
-            path = "/"
-            isHttpOnly = true
-            secure = true
+        val cookie = Cookie(jwtProperties.cookie.name, "").apply {
+            path = jwtProperties.cookie.path
+            isHttpOnly = jwtProperties.cookie.isHttpOnly
+            secure = jwtProperties.cookie.secure
             maxAge = 0
         }
 

@@ -13,15 +13,15 @@ INSERT INTO mtsp_users (organization_id, first_name, last_name, email, password_
 ON CONFLICT DO NOTHING;
 
 -- Добавляем решения
-INSERT INTO mtsp_solutions (user_id, status, total_cost) VALUES
-     (1, 'SOLVED', 123.45),
-     (2, 'QUEUED', NULL),
-     (3, 'INTERMEDIATE', 200.78)
+INSERT INTO mtsp_solutions (user_id, request_id, status, total_cost) VALUES
+     (1, '123-aboba-321', 'SOLVED', 123.45),
+     (2, '123-aboba-321', 'QUEUED', NULL),
+     (3, '123-aboba-321', 'INTERMEDIATE', 200.78)
 ON CONFLICT DO NOTHING;
 
 -- Добавляем маршруты
 INSERT INTO mtsp_routes (solution_id, salesman_index, points) VALUES
-      (1, 0, ARRAY['A', 'B', 'C']),
-      (1, 1, ARRAY['D', 'E', 'F']),
-      (2, 0, ARRAY['X', 'Y', 'Z'])
+      (1, 0, 'A,B,C'),
+      (1, 1, 'D,E,F'),
+      (2, 0, 'X,Y,Z')
 ON CONFLICT DO NOTHING;
