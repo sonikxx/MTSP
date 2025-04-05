@@ -1,9 +1,6 @@
 package api.controller
 
-import api.dto.MtspRequest
-import api.dto.MtspResponse
-import api.dto.MtspResponseAccept
-import api.dto.MtspSolverRequest
+import api.dto.*
 import api.kafka.RequestProducer
 import api.repository.MtspSolutionRepository
 import mu.KotlinLogging
@@ -32,16 +29,26 @@ class SolveController(
     ): MtspResponse {
         logger.info { "Received request!" }
 
-        val routes = mtspSolutionRepository.findBestRoute(userId)
-
-        for (route in routes) {
-            logger.info { "Route:" }
-            for (point in route.points) {
-                logger.info { point }
-            }
-            logger.info { "======= ======" }
+        var solution = mtspSolutionRepository.findFirstByUserIdAndRequestIdAndStatusOrderByTotalCostAsc(userId, requestId, SolutionStatus.SOLVED)
+        if (solution == null) {
+            solution = mtspSolutionRepository.findFirstByUserIdAndRequestIdOrderByTotalCostAsc(userId, requestId)
         }
-        return MtspResponse(status = "SOLVED", routes = listOf(listOf("A", "B"), listOf("C", "D", "E")))
+
+        if (solution == null) {
+            logger.info { "Solution not found — returning QUEUED with empty routes." }
+            return MtspResponse(status = "QUEUED", routes = emptyList())
+        }
+
+        val routes = solution.routes
+            .sortedBy { it.salesmanIndex }
+            .map { it.points.toList() }
+
+        logger.info { "Found solution with status=${solution.status}, routes count=${routes.size}" }
+
+        return MtspResponse(
+            status = solution.status.name,
+            routes = routes
+        )
     }
 
     companion object {

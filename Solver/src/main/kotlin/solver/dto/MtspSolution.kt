@@ -34,6 +34,9 @@ class MtspSolution() {
     @Column(name = "completed_at")
     var completedAt: Instant? = null
 
+    @OneToMany(mappedBy = "solution", cascade = [CascadeType.ALL], orphanRemoval = false)
+    var routes: MutableList<MtspRoute> = mutableListOf()
+
     constructor(
         userId: Long,
         requestId: String,
@@ -48,5 +51,16 @@ class MtspSolution() {
         this.totalCost = totalCost
         this.createdAt = createdAt
         this.completedAt = completedAt
+    }
+
+
+    fun addRoute(route: MtspRoute) {
+        route.solution = this
+        routes.add(route)
+    }
+
+    fun clearRoutes() {
+        routes.forEach { it.solution = this }
+        routes.clear()
     }
 }

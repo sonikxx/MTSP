@@ -18,14 +18,11 @@ CREATE TABLE mtsp_users (
                             FOREIGN KEY (organization_id) REFERENCES mtsp_organizations(id) ON DELETE CASCADE
 );
 
-
-CREATE TYPE mtsp_request_status AS ENUM ('QUEUED', 'INTERMEDIATE', 'SOLVED', 'FAILED');
-
 CREATE TABLE mtsp_solutions (
                                 id SERIAL PRIMARY KEY,
                                 request_id VARCHAR(40) NOT NULL,
                                 user_id INT NOT NULL,
-                                status mtsp_request_status NOT NULL DEFAULT 'QUEUED',
+                                status VARCHAR(20) NOT NULL DEFAULT 'QUEUED', -- 'QUEUED', 'INTERMEDIATE', 'SOLVED', 'FAILED'
                                 total_cost DOUBLE PRECISION,
                                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                 completed_at TIMESTAMP,

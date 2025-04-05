@@ -16,6 +16,9 @@ class Solution() {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long = 0
 
+    @Column(name = "request_id", nullable = false)
+    var requestId: String = ""
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     lateinit var user: User
@@ -32,6 +35,9 @@ class Solution() {
 
     @Column(name = "completed_at")
     var completedAt: Instant? = null
+
+    @OneToMany(mappedBy = "solution", cascade = [CascadeType.ALL], orphanRemoval = false)
+    var routes: MutableList<Route> = mutableListOf()
 
     constructor(
         user: User,

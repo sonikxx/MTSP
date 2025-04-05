@@ -1,11 +1,11 @@
 package solver.dto
 
 import jakarta.persistence.*
-import solver.converter.StringArrayConverter
+import solver.converter.StringListConverter
 
 @Entity
 @Table(name = "mtsp_routes")
-class MtspRoute {
+class MtspRoute() {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,7 +18,17 @@ class MtspRoute {
     @Column(name = "salesman_index", nullable = false)
     var salesmanIndex: Int = 0
 
-    @Convert(converter = StringArrayConverter::class)
+    @Convert(converter = StringListConverter::class)
     @Column(name = "points", nullable = false)
-    var points: Array<String> = emptyArray()
+    var points: List<String> = emptyList()
+
+    constructor(
+        solution: MtspSolution,
+        salesmanIndex: Int = 0,
+        points: List<String> = emptyList()
+    ) : this() {
+        this.solution = solution
+        this.salesmanIndex = salesmanIndex
+        this.points = points
+    }
 }

@@ -6,6 +6,7 @@ import solver.dto.Point
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import solver.dto.AlgorithmSolution
+import solver.dto.SolutionStatus
 import kotlin.math.min
 import kotlin.math.sqrt
 
@@ -13,7 +14,7 @@ import kotlin.math.sqrt
 @Service
 class TspAlgorithm {
 
-    fun solveMtsp(cities: List<Point>, numSalesmen: Int) : Flow<AlgorithmSolution> = flow {
+    fun solveMtsp(cities: List<Point>, numSalesmen: Int) : Flow<Pair<SolutionStatus, AlgorithmSolution>> = flow {
         logger.info { "Start MTSP algorithm" }
         if (numSalesmen <= 0 || cities.isEmpty()) return@flow
 
@@ -27,11 +28,11 @@ class TspAlgorithm {
                     bestResult.totalDistance = totalDistance
                     bestResult.cities = solution
                     logger.info { "New best result: $bestResult" }
-                    emit(bestResult)
+                    emit(Pair(SolutionStatus.INTERMEDIATE, bestResult))
                 }
             }
         }
-        // TODO: track the last result and emit it when the algorithm is finished (to store in DB status = SOLVED)
+        emit(Pair(SolutionStatus.SOLVED, bestResult))
         logger.info { "End MTSP algorithm" }
     }
 

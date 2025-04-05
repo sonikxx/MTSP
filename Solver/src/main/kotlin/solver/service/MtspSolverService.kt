@@ -4,9 +4,7 @@ import io.grpc.Status
 import io.grpc.StatusException
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
-import solver.dto.MtspSolution
-import solver.dto.MtspSolverRequest
-import solver.dto.Point
+import solver.dto.*
 import solver.repository.MtspSolutionRepository
 import java.time.Instant
 
@@ -20,7 +18,7 @@ class MtspSolverService(
         logger.info { "${request.requestId}: gRPC Request received for MTSP solving!" }
 
         val namesToId = mutableMapOf<String, Int>()
-        request.cities .forEach { city ->
+        request.cities.forEach { city ->
             namesToId[city.name] = namesToId.size
         }
         if (namesToId.size != request.cities.size) {
@@ -38,29 +36,38 @@ class MtspSolverService(
         }
         val numSalesmen = request.numSalesmen
 
-//        Thread.sleep(5000)
-//        tspAlgorithm.solveMtsp(cities, numSalesmen)
 
         val startTime = Instant.now()
-        val currentSolution = MtspSolution(
-            userId = 1,
-            requestId = request.requestId,
-            totalCost = 0.0,
-            createdAt = startTime,
-        )
+
 
         tspAlgorithm.solveMtsp(cities, numSalesmen)
-            .collect { solution ->
-                logger.info { "${request.requestId}: gRPC Response sent for MTSP solving!" }
+            .collect { (status, solution) ->
                 logger.info { "best = ${solution.totalDistance} for: ${solution.cities}" }
 
-                currentSolution.totalCost = solution.totalDistance
-                currentSolution.completedAt = Instant.now()
+                val currentSolution = MtspSolution(
+                    userId = 1,
+                    requestId = request.requestId,
+                    totalCost = solution.totalDistance,
+                    completedAt = Instant.now(),
+                    createdAt = startTime,
+                    status = status,
+                )
+                solution.cities.mapIndexed { index, route ->
+                    currentSolution.addRoute(
+                        MtspRoute(
+                            currentSolution,
+                            index,
+                            route.map { point ->
+                                request.cities[point.id].name
+                            }
+                        )
+                    )
+                }
 
                 mtspSolutionRepository.save(currentSolution)
                 Thread.sleep(100)
             }
-        logger.info { "${request.requestId}: gRPC Streaming completed!" }
+        logger.info { "Solving for `${request.requestId}` is completed!" }
     }
 
     companion object {
