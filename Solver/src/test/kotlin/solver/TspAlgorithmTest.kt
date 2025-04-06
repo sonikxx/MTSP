@@ -1,37 +1,34 @@
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
-import solver.SolverApplication
-import solver.service.TspAlgorithm
-import org.junit.jupiter.api.Assertions.assertEquals
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.springframework.boot.test.context.SpringBootTest
+import solver.algorithm.BruteForceAlgorithm
+import solver.algorithm.GeneticAlgorithm
+import solver.algorithm.MtspAlgorithmFactory
 import solver.dto.Point
+import solver.dto.SolutionStatus
 
 
-@SpringBootTest(classes = [SolverApplication::class])
-class TspAlgorithmTest {
+class MtspAlgorithmTest {
 
-    private val tspAlgorithm = TspAlgorithm()
+    private val mtspAlgorithmFactory = MtspAlgorithmFactory(listOf(BruteForceAlgorithm(), GeneticAlgorithm()))
 
     @Test
-    fun `test brute force with four cities`() = runBlocking {
-        // Given: A small set of 4 cities
+    fun `test brute force with five cities`(): Unit = runBlocking {
+        // Given: A small set of 5 cities
         val cities = listOf(
-            Point(0, 0.0, 0.0),
+            Point(0, 0.0, 1.0),
             Point(1, 1.0, 0.0),
-            Point(2, 1.0, 1.0),
-            Point(3, 0.0, 1.0)
+            Point(2, 10.0, 10.0),
+            Point(3, 9.0, 10.0),
+            Point(4, 10.0, 9.0),
         )
         val numSalesmen = 2
 
-        val solutions = tspAlgorithm.solveMtsp(cities, numSalesmen).toList()
+        val tspAlgorithm = mtspAlgorithmFactory.get("bruteForce")!!
+        val solutions = tspAlgorithm.solve(cities, numSalesmen).toList()
 
-        assert(solutions.isNotEmpty()) { "No solutions were found!" }
-
-//        val firstSolution = solutions.first()
-//        assertEquals(numSalesmen, firstSolution.size, "Solution should contain routes for each salesman")
-//
-//        val visitedCities = firstSolution.values.flatten().map { it.id }.toSet()
-//        assertEquals(cities.map { it.id }.toSet(), visitedCities, "All cities must be visited exactly once")
+        assertThat(solutions.first().first).isEqualTo(SolutionStatus.INTERMEDIATE)
+        assertThat(solutions.last().first).isEqualTo(SolutionStatus.SOLVED)
     }
 }

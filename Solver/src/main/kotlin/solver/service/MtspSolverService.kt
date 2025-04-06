@@ -4,13 +4,14 @@ import io.grpc.Status
 import io.grpc.StatusException
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
+import solver.algorithm.MtspAlgorithmFactory
 import solver.dto.*
 import solver.repository.MtspSolutionRepository
 import java.time.Instant
 
 @Service
 class MtspSolverService(
-    private val tspAlgorithm: TspAlgorithm,
+    private val mtspAlgorithmFactory: MtspAlgorithmFactory,
     private val mtspSolutionRepository: MtspSolutionRepository,
 ) {
 
@@ -39,8 +40,24 @@ class MtspSolverService(
 
         val startTime = Instant.now()
 
-
-        tspAlgorithm.solveMtsp(cities, numSalesmen)
+        val tspAlgorithm = mtspAlgorithmFactory.get(request.algorithm)
+        if (tspAlgorithm == null) {
+            logger.error { "${request.requestId}: Unknown algorithm: ${request.algorithm}" }
+            mtspSolutionRepository.save(
+                MtspSolution(
+                    userId = request.userId,
+                    requestId = request.requestId,
+                    // TODO: Add algorithm name into database
+//                    algorithm = request.algorithm,
+                    totalCost = Double.MAX_VALUE,
+                    createdAt = startTime,
+                    completedAt = Instant.now(),
+                    status = SolutionStatus.FAILED
+                )
+            )
+            return
+        }
+        tspAlgorithm.solve(cities, numSalesmen)
             .collect { (status, solution) ->
                 logger.info { "best = ${solution.totalDistance} for: ${solution.cities}" }
 
@@ -48,8 +65,8 @@ class MtspSolverService(
                     userId = request.userId,
                     requestId = request.requestId,
                     totalCost = solution.totalDistance,
-                    completedAt = Instant.now(),
                     createdAt = startTime,
+                    completedAt = Instant.now(),
                     status = status,
                 )
                 solution.cities.mapIndexed { index, route ->

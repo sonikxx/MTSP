@@ -15,13 +15,14 @@ class TaskConsumer(
 
     @KafkaListener(topics = [TOPIC], groupId = GROUP_ID)
     suspend fun consumeTask(message: String) {
+        // TODO: only one consumer for now
         logger.info { "Received task: $message" }
         try {
             val request = objectMapper.readValue(message, MtspSolverRequest::class.java)
-            logger.info { "[ABOBA] Received task: $request" }
+            logger.info { "Received task: $request" }
             mtspSolverService.solve(request)
         } catch (e: Exception) {
-            logger.error { "[ABOBA] Error parsing Kafka message: ${e.message}" }
+            logger.error { "Error parsing Kafka message: ${e.message}" }
         }
     }
 

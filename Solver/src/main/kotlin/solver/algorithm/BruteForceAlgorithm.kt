@@ -1,20 +1,19 @@
-package solver.service
+package solver.algorithm
 
-import mu.KotlinLogging
-import org.springframework.stereotype.Service
+
 import solver.dto.Point
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import mu.KotlinLogging
+import org.springframework.stereotype.Service
 import solver.dto.AlgorithmSolution
 import solver.dto.SolutionStatus
-import kotlin.math.min
-import kotlin.math.sqrt
-
 
 @Service
-class TspAlgorithm {
+class BruteForceAlgorithm : MtspAlgorithm() {
+    override val name: String = "bruteForce"
 
-    fun solveMtsp(cities: List<Point>, numSalesmen: Int) : Flow<Pair<SolutionStatus, AlgorithmSolution>> = flow {
+    override fun solve(cities: List<Point>, numSalesmen: Int) : Flow<Pair<SolutionStatus, AlgorithmSolution>> = flow {
         logger.info { "Start MTSP algorithm" }
         if (numSalesmen <= 0 || cities.isEmpty()) return@flow
 
@@ -36,28 +35,6 @@ class TspAlgorithm {
         logger.info { "End MTSP algorithm" }
     }
 
-    private fun distributeAmongSalesmen(salesmen: Int, points: List<Point>): Sequence<List<List<Point>>> = sequence {
-        val maxPartitionSize = points.size / salesmen
-        for (partition in generatePartitions(points, salesmen, maxPartitionSize)) {
-            yield(partition)
-        }
-    }
-
-    private fun generatePartitions(points: List<Point>, salesmen: Int, maxSize: Int): Sequence<List<List<Point>>> = sequence {
-        if (salesmen == 1) {
-            yield(listOf(points))
-        } else {
-            val maxIndex = min(points.size, maxSize)
-            for (i in 1..maxIndex) {
-                val firstPartition = points.take(i)
-                val remaining = points.drop(i)
-                for (subPartition in generatePartitions(remaining, salesmen - 1, maxSize)) {
-                    yield(listOf(firstPartition) + subPartition)
-                }
-            }
-        }
-    }
-
     private fun calculateTotalDistance1(routes: List<List<Point>>): Double {
         var totalDistance = 0.0
         for (route in routes) {
@@ -74,9 +51,6 @@ class TspAlgorithm {
         totalDistance += distance(route.last(), route.first())
         return totalDistance
     }
-
-    private fun distance(a: Point, b: Point): Double =
-        sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y))
 
     // Extension function to generate all permutations of a list
     private fun<T> List<T>.permutations(): Sequence<List<T>> = sequence {

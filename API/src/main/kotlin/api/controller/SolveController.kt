@@ -30,7 +30,15 @@ class SolveController(
     ): MtspResponseAccept {
         val requestId = UUID.randomUUID().toString()
 
-        requestProducer.sendTask(MtspSolverRequest(requestId, userId, request.cities, request.salesmanNumber))
+        requestProducer.sendTask(
+            MtspSolverRequest(
+                requestId,
+                userId,
+                request.cities,
+                request.salesmanNumber,
+                "bruteForce",
+            )
+        )
         return MtspResponseAccept(requestId)
     }
 

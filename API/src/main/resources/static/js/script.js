@@ -20,6 +20,8 @@ function startPoling(requestId, onIntermediate, onSuccess, checkInterval = 300, 
             } else if (data.status === "INTERMEDIATE") {
                 console.log("Still working...");
                 onIntermediate(data);
+            } else if (data.status === "FAILED") {
+                throw new Error("Internal error occurred.");
             }
         } catch (error) {
             console.log("Error while polling: " + error);
