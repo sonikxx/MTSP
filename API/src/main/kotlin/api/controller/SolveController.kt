@@ -1,10 +1,8 @@
 package api.controller
 
-import api.dto.MtspRequest
-import api.dto.MtspResponse
-import api.dto.MtspResponseAccept
-import api.dto.MtspSolverRequest
+import api.dto.*
 import api.kafka.RequestProducer
+import api.repository.MtspRequestRepository
 import api.service.SolutionService
 import mu.KotlinLogging
 import org.springframework.web.bind.annotation.GetMapping
@@ -14,29 +12,44 @@ import org.springframework.web.bind.annotation.RequestAttribute
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import java.time.Instant
 import java.util.UUID
 
 @RestController
 @RequestMapping("/protected")
 class SolveController(
     private val requestProducer: RequestProducer,
-    private val solutionService: SolutionService
+    private val solutionService: SolutionService,
+    private val requestRepository: MtspRequestRepository,
 ) {
 
     @PostMapping("/v1/solve")
     fun solve(
-        @RequestBody request: MtspRequest,
+        @RequestBody request: MtspApiRequest,
         @RequestAttribute(name = "userId") userId: Long
     ): MtspResponseAccept {
         val requestId = UUID.randomUUID().toString()
 
         requestProducer.sendTask(
             MtspSolverRequest(
-                requestId,
-                userId,
-                request.cities,
-                request.salesmanNumber,
-                "bruteForce",
+                requestId = requestId,
+                userId = userId,
+                cities = request.cities,
+                numSalesmen = request.salesmanNumber,
+                algorithm = request.algorithm,
+                algorithmParams = request.algorithmParams,
+            )
+        )
+        requestRepository.save(
+            MtspRequest(
+                id = requestId,
+                userId = userId,
+                status = SolutionStatus.QUEUED,
+                createdAt = Instant.now(),
+                salesmanNumber = request.salesmanNumber,
+                points = request.cities.map { it.toString() }.toTypedArray(),
+                algorithm = request.algorithm,
+                algorithmParams = request.algorithmParams.toString(),
             )
         )
         return MtspResponseAccept(requestId)

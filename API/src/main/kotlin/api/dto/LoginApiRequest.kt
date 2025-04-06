@@ -1,6 +1,6 @@
 package api.dto
 
-data class LoginRequest(
+data class LoginApiRequest(
     val email: String,
     val password: String
 )

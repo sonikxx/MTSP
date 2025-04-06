@@ -8,7 +8,13 @@ class GraphDrawer {
         this.names = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
         this.pointIndex = 0;
         this.routes = [];
-        this.colors = ['red', 'blue', 'green', 'purple', 'orange', 'brown', 'pink', 'cyan', 'magenta'];
+        this.colors = [
+            '#666666', // Темно-серый
+            '#3b6e3a', // Темно-зеленый
+            '#b0b0b0', // Теплый серый
+            '#7a4b3c', // Темно-коричневый
+            '#4f6d7a'  // Серый с голубым оттенком
+        ];
 
         this.canvas.addEventListener('click', this.addPoint.bind(this));
         this.drawGrid();
@@ -17,6 +23,8 @@ class GraphDrawer {
     drawGrid() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.ctx.beginPath();
+        this.ctx.strokeStyle = "#ffffff";
+        this.ctx.lineWidth = 2;
         for (let i = 0; i <= this.canvas.width; i += 50) {
             this.ctx.moveTo(i, 0);
             this.ctx.lineTo(i, this.canvas.height);
@@ -25,7 +33,6 @@ class GraphDrawer {
             this.ctx.moveTo(0, i);
             this.ctx.lineTo(this.canvas.width, i);
         }
-        this.ctx.strokeStyle = "#ddd";
         this.ctx.stroke();
     }
 
@@ -44,15 +51,15 @@ class GraphDrawer {
     drawPoints() {
         this.drawGrid();
 
+        this.drawRoutes();
+
         this.points.forEach(point => {
             this.ctx.beginPath();
             this.ctx.arc(point.x, point.y, 5, 0, Math.PI * 2);
-            this.ctx.fillStyle = 'black';
+            this.ctx.fillStyle = "#60a5fa";
             this.ctx.fill();
             this.ctx.fillText(point.name, point.x + 8, point.y - 8);
         });
-
-        this.drawRoutes();
     }
 
     drawRoutes() {

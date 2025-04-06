@@ -1,7 +1,7 @@
 package api.controller
 
 import api.config.JwtProperties
-import api.dto.LoginRequest
+import api.dto.LoginApiRequest
 import api.security.JwtTokenUtil
 import api.service.AuthService
 import jakarta.servlet.http.Cookie
@@ -25,7 +25,7 @@ class AuthController(
 
     @PostMapping("/login")
     fun login(
-        @RequestBody request: LoginRequest,
+        @RequestBody request: LoginApiRequest,
         response: HttpServletResponse
     ): ResponseEntity<String> {
         val user = authService.login(

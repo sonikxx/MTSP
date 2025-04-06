@@ -34,7 +34,7 @@ class MtspSolverService(
 
         val cities = request.cities.mapIndexed { index, city ->
             Point(index, city.x, city.y)
-        }
+        }.shuffled()
         val numSalesmen = request.numSalesmen
 
 
@@ -47,8 +47,6 @@ class MtspSolverService(
                 MtspSolution(
                     userId = request.userId,
                     requestId = request.requestId,
-                    // TODO: Add algorithm name into database
-//                    algorithm = request.algorithm,
                     totalCost = Double.MAX_VALUE,
                     createdAt = startTime,
                     completedAt = Instant.now(),

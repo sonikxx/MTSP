@@ -11,7 +11,7 @@ import java.time.Instant
 
 @Entity
 @jakarta.persistence.Table(name = "mtsp_users")
-class User() {
+class User {
 
     @jakarta.persistence.Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,22 +38,4 @@ class User() {
 
     @Column(name = "last_activity", nullable = false)
     var lastActivity: Instant = Instant.now()
-
-    constructor(
-        organization: Organization,
-        firstName: String,
-        lastName: String,
-        email: String,
-        passwordHash: String,
-        isAdmin: Boolean = false,
-        lastActivity: Instant = Instant.now()
-    ) : this() {
-        this.organization = organization
-        this.firstName = firstName
-        this.lastName = lastName
-        this.email = email
-        this.passwordHash = passwordHash
-        this.isAdmin = isAdmin
-        this.lastActivity = lastActivity
-    }
 }

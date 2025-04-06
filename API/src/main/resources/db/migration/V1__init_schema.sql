@@ -18,6 +18,17 @@ CREATE TABLE mtsp_users (
                             FOREIGN KEY (organization_id) REFERENCES mtsp_organizations(id) ON DELETE CASCADE
 );
 
+CREATE TABLE mtsp_requests (
+    id               VARCHAR(40) NOT NULL UNIQUE,
+    user_id          INT         NOT NULL,
+    status           VARCHAR(20) NOT NULL DEFAULT 'QUEUED', -- QUEUED, SOLVED, FAILED
+    created_at       TIMESTAMP            DEFAULT CURRENT_TIMESTAMP,
+    salesman_number  INT         NOT NULL,
+    points           TEXT        NOT NULL,
+    algorithm        VARCHAR(50) NOT NULL,
+    algorithm_params TEXT
+);
+
 CREATE TABLE mtsp_solutions (
                                 id SERIAL PRIMARY KEY,
                                 request_id VARCHAR(40) NOT NULL,

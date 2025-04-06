@@ -58,9 +58,4 @@ class MtspSolution() {
         route.solution = this
         routes.add(route)
     }
-
-    fun clearRoutes() {
-        routes.forEach { it.solution = this }
-        routes.clear()
-    }
 }
