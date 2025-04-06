@@ -1,24 +1,36 @@
 package api.controller
 
-import api.dto.*
+import api.dto.MtspRequest
+import api.dto.MtspResponse
+import api.dto.MtspResponseAccept
+import api.dto.MtspSolverRequest
 import api.kafka.RequestProducer
-import api.repository.MtspSolutionRepository
+import api.service.SolutionService
 import mu.KotlinLogging
-import org.springframework.web.bind.annotation.*
-import java.util.*
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestAttribute
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
+import java.util.UUID
 
 @RestController
 @RequestMapping("/protected")
 class SolveController(
     private val requestProducer: RequestProducer,
-    private val mtspSolutionRepository: MtspSolutionRepository
+    private val solutionService: SolutionService
 ) {
 
     @PostMapping("/v1/solve")
-    fun solve(@RequestBody request: MtspRequest): MtspResponseAccept {
+    fun solve(
+        @RequestBody request: MtspRequest,
+        @RequestAttribute(name = "userId") userId: Long
+    ): MtspResponseAccept {
         val requestId = UUID.randomUUID().toString()
 
-        requestProducer.sendTask(MtspSolverRequest(requestId, request.cities, request.salesmanNumber))
+        requestProducer.sendTask(MtspSolverRequest(requestId, userId, request.cities, request.salesmanNumber))
         return MtspResponseAccept(requestId)
     }
 
@@ -29,14 +41,10 @@ class SolveController(
     ): MtspResponse {
         logger.info { "Received request!" }
 
-        var solution = mtspSolutionRepository.findFirstByUserIdAndRequestIdAndStatusOrderByTotalCostAsc(userId, requestId, SolutionStatus.SOLVED)
-        if (solution == null) {
-            solution = mtspSolutionRepository.findFirstByUserIdAndRequestIdOrderByTotalCostAsc(userId, requestId)
-        }
-
+        val solution = solutionService.getSolution(requestId, userId)
         if (solution == null) {
             logger.info { "Solution not found — returning QUEUED with empty routes." }
-            return MtspResponse(status = "QUEUED", routes = emptyList())
+            return MtspResponse(status = "QUEUED")
         }
 
         val routes = solution.routes

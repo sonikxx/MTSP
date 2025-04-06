@@ -1,8 +1,19 @@
 package api.dto
 
-import jakarta.persistence.*
+import jakarta.persistence.CascadeType
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
+import jakarta.persistence.FetchType
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.GenerationType
+import jakarta.persistence.Id
+import jakarta.persistence.JoinColumn
+import jakarta.persistence.ManyToOne
+import jakarta.persistence.OneToMany
+import jakarta.persistence.Table
 import java.time.Instant
-
 
 enum class SolutionStatus {
     QUEUED, INTERMEDIATE, SOLVED, FAILED
@@ -10,8 +21,7 @@ enum class SolutionStatus {
 
 @Entity
 @Table(name = "mtsp_solutions")
-class Solution() {
-
+class Solution {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long = 0
@@ -38,18 +48,4 @@ class Solution() {
 
     @OneToMany(mappedBy = "solution", cascade = [CascadeType.ALL], orphanRemoval = false)
     var routes: MutableList<Route> = mutableListOf()
-
-    constructor(
-        user: User,
-        status: SolutionStatus = SolutionStatus.QUEUED,
-        totalCost: Double? = null,
-        createdAt: Instant = Instant.now(),
-        completedAt: Instant? = null
-    ) : this() {
-        this.user = user
-        this.status = status
-        this.totalCost = totalCost
-        this.createdAt = createdAt
-        this.completedAt = completedAt
-    }
 }

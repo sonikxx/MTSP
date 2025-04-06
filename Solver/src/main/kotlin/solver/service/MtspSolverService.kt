@@ -26,9 +26,9 @@ class MtspSolverService(
             throw StatusException(Status.INVALID_ARGUMENT.withDescription("Duplicate city names are not allowed"))
         }
 
-        if (request.numSalesmen <= 0) {
+        if (request.numSalesmen <= 0 || request.numSalesmen > request.cities.size) {
             logger.error { "${request.requestId}: Invalid number of salesmen: ${request.numSalesmen}" }
-            throw StatusException(Status.INVALID_ARGUMENT.withDescription("Number of salesmen must be positive"))
+            throw StatusException(Status.INVALID_ARGUMENT.withDescription("Number of salesmen must be positive and less than the number of cities"))
         }
 
         val cities = request.cities.mapIndexed { index, city ->
@@ -45,7 +45,7 @@ class MtspSolverService(
                 logger.info { "best = ${solution.totalDistance} for: ${solution.cities}" }
 
                 val currentSolution = MtspSolution(
-                    userId = 1,
+                    userId = request.userId,
                     requestId = request.requestId,
                     totalCost = solution.totalDistance,
                     completedAt = Instant.now(),
