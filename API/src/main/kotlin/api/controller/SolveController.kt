@@ -1,6 +1,10 @@
 package api.controller
 
-import api.dto.*
+import api.dto.MtspApiRequest
+import api.dto.MtspResponseAccept
+import api.dto.MtspRequest
+import api.dto.MtspEdge
+import api.dto.MtspResponse
 import api.kafka.RequestProducer
 import api.repository.MtspRequestRepository
 import api.service.SolutionService
@@ -12,8 +16,8 @@ import org.springframework.web.bind.annotation.RequestAttribute
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import java.time.Instant
 import java.util.UUID
+
 
 @RestController
 @RequestMapping("/protected")
@@ -28,31 +32,31 @@ class SolveController(
         @RequestBody request: MtspApiRequest,
         @RequestAttribute(name = "userId") userId: Long
     ): MtspResponseAccept {
-        val requestId = UUID.randomUUID().toString()
 
-        requestProducer.sendTask(
-            MtspSolverRequest(
-                requestId = requestId,
-                userId = userId,
-                cities = request.cities,
-                numSalesmen = request.salesmanNumber,
-                algorithm = request.algorithm,
-                algorithmParams = request.algorithmParams,
-            )
+        // TODO: may be it is possible to factor out in some sort of converter
+        val mtspRequest = MtspRequest(
+            userId = userId,
+            salesmanNumber = request.salesmanNumber,
+            points = request.cities.map { it.toString() }.toTypedArray(),
+            algorithm = request.algorithm,
+            algorithmParams = request.algorithmParams.toString()
         )
-        requestRepository.save(
-            MtspRequest(
-                id = requestId,
-                userId = userId,
-                status = SolutionStatus.QUEUED,
-                createdAt = Instant.now(),
-                salesmanNumber = request.salesmanNumber,
-                points = request.cities.map { it.toString() }.toTypedArray(),
-                algorithm = request.algorithm,
-                algorithmParams = request.algorithmParams.toString(),
-            )
-        )
-        return MtspResponseAccept(requestId)
+        request.distances.mapIndexed { fromNode, edge ->
+            edge.mapIndexed { toNode, distance ->
+                mtspRequest.addEdge(MtspEdge(
+                        request = mtspRequest,
+                        fromNode = fromNode.toLong(),
+                        toNode = toNode.toLong(),
+                        distance = distance
+                    )
+                )
+            }
+        }
+        requestRepository.save(mtspRequest)
+
+        requestProducer.sendTask(mtspRequest.id)
+
+        return MtspResponseAccept(mtspRequest.id)
     }
 
     @GetMapping("/v1/result/{requestId}")

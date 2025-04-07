@@ -18,17 +18,6 @@ CREATE TABLE mtsp_users (
                             FOREIGN KEY (organization_id) REFERENCES mtsp_organizations(id) ON DELETE CASCADE
 );
 
-CREATE TABLE mtsp_requests (
-    id               VARCHAR(40) NOT NULL UNIQUE,
-    user_id          INT         NOT NULL,
-    status           VARCHAR(20) NOT NULL DEFAULT 'QUEUED', -- QUEUED, SOLVED, FAILED
-    created_at       TIMESTAMP            DEFAULT CURRENT_TIMESTAMP,
-    salesman_number  INT         NOT NULL,
-    points           TEXT        NOT NULL,
-    algorithm        VARCHAR(50) NOT NULL,
-    algorithm_params TEXT
-);
-
 CREATE TABLE mtsp_solutions (
                                 id SERIAL PRIMARY KEY,
                                 request_id VARCHAR(40) NOT NULL,
@@ -48,4 +37,37 @@ CREATE TABLE mtsp_routes (
                              points TEXT NOT NULL,
 
                              FOREIGN KEY (solution_id) REFERENCES mtsp_solutions(id) ON DELETE CASCADE
+);
+
+CREATE TABLE mtsp_requests (
+                               id VARCHAR(40) PRIMARY KEY,
+                               user_id          INT         NOT NULL,
+                               status           VARCHAR(20) NOT NULL DEFAULT 'QUEUED' CHECK (status IN ('QUEUED', 'SOLVED', 'CANCELED', 'FAILED')),
+                               created_at       TIMESTAMP            DEFAULT CURRENT_TIMESTAMP,
+                               salesman_number  INT         NOT NULL,
+                               points           TEXT        NOT NULL,
+                               algorithm        VARCHAR(50) NOT NULL,
+                               algorithm_params TEXT
+);
+
+CREATE TABLE mtsp_edges
+(
+    id SERIAL PRIMARY KEY,
+    request_id VARCHAR(40) NOT NULL,
+    from_node INT NOT NULL,
+    to_node   INT NOT NULL,
+    distance  DOUBLE PRECISION NOT NULL,
+
+    FOREIGN KEY (request_id) REFERENCES mtsp_requests (id) ON DELETE CASCADE
+);
+
+CREATE TABLE mtsp_logs
+(
+    request_id VARCHAR(40) NOT NULL,
+    user_id   INT         NOT NULL,
+    level     VARCHAR(10) NOT NULL,
+    message   TEXT        NOT NULL,
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (request_id) REFERENCES mtsp_requests (id) ON DELETE CASCADE
 );
