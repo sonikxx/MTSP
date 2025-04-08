@@ -5,25 +5,23 @@ import mu.KotlinLogging
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.stereotype.Service
 import solver.service.MtspSolverService
-import solver.dto.MtspSolverRequest
+import solver.repository.MtspRequestRepository
 
 @Service
 class TaskConsumer(
-    private val mtspSolverService: MtspSolverService
+    private val mtspSolverService: MtspSolverService,
+    private val mtspRequestRepository: MtspRequestRepository,
 ) {
-    private val objectMapper = jacksonObjectMapper()
-
     @KafkaListener(topics = [TOPIC], groupId = GROUP_ID)
-    suspend fun consumeTask(message: String) {
+    suspend fun consumeTask(requestId: String) {
         // TODO: only one consumer for now
-        logger.info { "Received task: $message" }
-        try {
-            val request = objectMapper.readValue(message, MtspSolverRequest::class.java)
-            logger.info { "Received task: $request" }
+        logger.info { "Received task: $requestId" }
+
+        mtspRequestRepository.findWithEdgesById(requestId)?.let { request ->
+            logger.info { "Solving task: $request" }
             mtspSolverService.solve(request)
-        } catch (e: Exception) {
-            logger.error { "Error parsing Kafka message: ${e.message}" }
-        }
+        } ?: logger.error { "No MTSP request found for ID: $requestId" }
+        // TODO: save error in database if it is possible
     }
 
     companion object {

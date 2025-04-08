@@ -5,6 +5,7 @@ class GraphDrawer {
         this.canvas.width = width;
         this.canvas.height = height;
         this.points = [];
+        this.distances = [];
         this.names = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
         this.pointIndex = 0;
         this.routes = [];
@@ -18,6 +19,24 @@ class GraphDrawer {
 
         this.canvas.addEventListener('click', this.addPoint.bind(this));
         this.drawGrid();
+    }
+
+    calculateDistance(pointA, pointB) {
+        return Math.sqrt(Math.pow(pointB.x - pointA.x, 2) + Math.pow(pointB.y - pointA.y, 2));
+    }
+
+    updateDistances() {
+        const numPoints = this.points.length;
+        // Initialize a new distance matrix
+        this.distances = Array.from({ length: numPoints }, () => Array(numPoints).fill(0));
+
+        for (let i = 0; i < numPoints; i++) {
+            for (let j = i + 1; j < numPoints; j++) {
+                const distance = this.calculateDistance(this.points[i], this.points[j]);
+                this.distances[i][j] = distance;
+                this.distances[j][i] = distance;
+            }
+        }
     }
 
     drawGrid() {
@@ -45,6 +64,9 @@ class GraphDrawer {
         const name = this.names[this.pointIndex];
         this.points.push({ name, x, y });
         this.pointIndex++;
+
+        this.updateDistances();
+
         this.drawPoints();
     }
 
@@ -69,13 +91,15 @@ class GraphDrawer {
 
             this.ctx.beginPath();
             route.forEach((name, i) => {
-                const point = this.points.find(p => p.name === name);
+                const point = this.points.find(p => p.name === name.name);
                 if (point) {
                     if (i === 0) {
                         this.ctx.moveTo(point.x, point.y);
                     } else {
                         this.ctx.lineTo(point.x, point.y);
                     }
+                } else {
+                    console.log(`Point ${name.name} not found`);
                 }
             });
             this.ctx.stroke();

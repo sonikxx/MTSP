@@ -13,10 +13,10 @@ class MtspSolution() {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long = 0
+    var id: Int = 0
 
     @Column(name = "user_id", nullable = false)
-    var userId: Long = 0
+    var userId: Int = 0
 
     @Column(name = "request_id", nullable = false)
     var requestId: String = ""
@@ -38,7 +38,7 @@ class MtspSolution() {
     var routes: MutableList<MtspRoute> = mutableListOf()
 
     constructor(
-        userId: Long,
+        userId: Int,
         requestId: String,
         status: SolutionStatus = SolutionStatus.QUEUED,
         totalCost: Double? = null,
@@ -52,7 +52,6 @@ class MtspSolution() {
         this.createdAt = createdAt
         this.completedAt = completedAt
     }
-
 
     fun addRoute(route: MtspRoute) {
         route.solution = this

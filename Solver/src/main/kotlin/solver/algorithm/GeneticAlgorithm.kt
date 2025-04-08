@@ -17,6 +17,7 @@ class GeneticAlgorithm : MtspAlgorithm() {
 
     override fun solve(
         cities: List<Point>,
+        distances: Array<Array<Double>>,
         numSalesmen: Int
     ): Flow<Pair<SolutionStatus, AlgorithmSolution>> = flow {
         logger.info { "Start genetic algorithm" }
@@ -27,26 +28,26 @@ class GeneticAlgorithm : MtspAlgorithm() {
         val updateInterval = 50
 
         var population = generateInitialPopulation(populationSize, cities, numSalesmen)
-        var best = population.minByOrNull { calculateTotalDistance(it) }!!
+        var best = population.minByOrNull { calculateTotalDistance(distances, it) }!!
         var currentBestGenerationNumber = 0
 
-        emit(SolutionStatus.INTERMEDIATE to AlgorithmSolution(best, -1, calculateTotalDistance(best)))
+        emit(SolutionStatus.INTERMEDIATE to AlgorithmSolution(best, -1, calculateTotalDistance(distances, best)))
 
         repeat(generations) { gen ->
 //            logger.info { "Generation $gen" }
-            population = evolvePopulation(population, mutationRate)
-            val currentBest = population.minByOrNull { calculateTotalDistance(it) }!!
-            if (calculateTotalDistance(currentBest) < calculateTotalDistance(best)) {
+            population = evolvePopulation(distances, population, mutationRate)
+            val currentBest = population.minByOrNull { calculateTotalDistance(distances, it) }!!
+            if (calculateTotalDistance(distances, currentBest) < calculateTotalDistance(distances, best)) {
                 best = currentBest
                 if (currentBestGenerationNumber % updateInterval == 0) {
                     logger.info { "Generation $gen" }
-                    emit(SolutionStatus.INTERMEDIATE to AlgorithmSolution(best, gen, calculateTotalDistance(best)))
+                    emit(SolutionStatus.INTERMEDIATE to AlgorithmSolution(best, gen, calculateTotalDistance(distances, best)))
                 }
                 currentBestGenerationNumber++
             }
         }
 
-        emit(SolutionStatus.SOLVED to AlgorithmSolution(best, generations, calculateTotalDistance(best)))
+        emit(SolutionStatus.SOLVED to AlgorithmSolution(best, generations, calculateTotalDistance(distances, best)))
         logger.info { "End genetic algorithm" }
     }
 
@@ -62,10 +63,11 @@ class GeneticAlgorithm : MtspAlgorithm() {
     }
 
     private fun evolvePopulation(
+        distances: Array<Array<Double>>,
         population: List<List<List<Point>>>,
         mutationRate: Double
     ): List<List<List<Point>>> {
-        val sorted = population.sortedBy { calculateTotalDistance(it) }
+        val sorted = population.sortedBy { calculateTotalDistance(distances, it) }
         val survivors = sorted.take(population.size / 2)
         val offspring = mutableListOf<List<List<Point>>>()
 

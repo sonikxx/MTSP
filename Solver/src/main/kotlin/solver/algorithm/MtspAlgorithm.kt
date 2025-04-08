@@ -14,17 +14,18 @@ abstract class MtspAlgorithm {
 
     abstract fun solve(
         cities: List<Point>,
+        distances: Array<Array<Double>>,
         numSalesmen: Int
     ): Flow<Pair<SolutionStatus, AlgorithmSolution>>
 
-    protected fun distance(a: Point, b: Point): Double =
-        sqrt((a.x - b.x).pow(2) + (a.y - b.y).pow(2))
+    protected fun distance(distances: Array<Array<Double>>, a: Point, b: Point): Double =
+        distances[a.id][b.id]
 
-    protected fun calculateRouteDistance(route: List<Point>): Double =
-        route.zipWithNext().sumOf { (a, b) -> distance(a, b) }
+    protected fun calculateRouteDistance(distances: Array<Array<Double>>, route: List<Point>): Double =
+        route.zipWithNext().sumOf { (a, b) -> distance(distances, a, b) }
 
-    protected fun calculateTotalDistance(routes: List<List<Point>>): Double =
-        routes.sumOf { calculateRouteDistance(it) }
+    protected fun calculateTotalDistance(distances: Array<Array<Double>>, routes: List<List<Point>>): Double =
+        routes.sumOf { calculateRouteDistance(distances, it) }
 
     protected fun distributeAmongSalesmen(salesmen: Int, points: List<Point>): Sequence<List<List<Point>>> = sequence {
         val maxPartitionSize = points.size / salesmen

@@ -1,5 +1,6 @@
 package solver.service
 
+import com.example.grpc.MtspSolverRequest
 import io.grpc.Status
 import io.grpc.StatusException
 import mu.KotlinLogging
@@ -15,53 +16,57 @@ class MtspSolverService(
     private val mtspSolutionRepository: MtspSolutionRepository,
 ) {
 
-    suspend fun solve(request: MtspSolverRequest) {
-        logger.info { "${request.requestId}: gRPC Request received for MTSP solving!" }
-
+    suspend fun solve(request: MtspRequest) {
         val namesToId = mutableMapOf<String, Int>()
-        request.cities.forEach { city ->
-            namesToId[city.name] = namesToId.size
+        request.points.forEach { point ->
+            namesToId[point] = namesToId.size
         }
-        if (namesToId.size != request.cities.size) {
-            logger.error { "${request.requestId}: gRPC Request contains duplicate city names!" }
+        if (namesToId.size != request.points.size) {
+            logger.error { "${request.id}: Request contains duplicate city names!" }
             throw StatusException(Status.INVALID_ARGUMENT.withDescription("Duplicate city names are not allowed"))
         }
 
-        if (request.numSalesmen <= 0 || request.numSalesmen > request.cities.size) {
-            logger.error { "${request.requestId}: Invalid number of salesmen: ${request.numSalesmen}" }
+        if (request.salesmanNumber <= 0 || request.salesmanNumber > request.points.size) {
+            logger.error { "${request.id}: Invalid number of salesmen: ${request.salesmanNumber}" }
             throw StatusException(Status.INVALID_ARGUMENT.withDescription("Number of salesmen must be positive and less than the number of cities"))
         }
 
-        val cities = request.cities.mapIndexed { index, city ->
-            Point(index, city.x, city.y)
+        val cities = request.points.map{ point ->
+            Point(namesToId[point]!!)
         }.shuffled()
-        val numSalesmen = request.numSalesmen
-
 
         val startTime = Instant.now()
 
         val tspAlgorithm = mtspAlgorithmFactory.get(request.algorithm)
         if (tspAlgorithm == null) {
-            logger.error { "${request.requestId}: Unknown algorithm: ${request.algorithm}" }
+            logger.error { "${request.id}: Unknown algorithm: ${request.algorithm}" }
             mtspSolutionRepository.save(
                 MtspSolution(
                     userId = request.userId,
-                    requestId = request.requestId,
+                    requestId = request.id,
                     totalCost = Double.MAX_VALUE,
-                    createdAt = startTime,
                     completedAt = Instant.now(),
                     status = SolutionStatus.FAILED
                 )
             )
             return
         }
-        tspAlgorithm.solve(cities, numSalesmen)
+
+        val nodeCount = namesToId.size
+        val distances = Array(nodeCount) { Array(nodeCount) { Double.POSITIVE_INFINITY } }
+
+        // Populate with actual distances
+        for (edge in request.edges) {
+            distances[edge.fromNode][edge.toNode] = edge.distance
+        }
+
+        tspAlgorithm.solve(cities, distances, request.salesmanNumber)
             .collect { (status, solution) ->
                 logger.info { "best = ${solution.totalDistance} for: ${solution.cities}" }
 
                 val currentSolution = MtspSolution(
                     userId = request.userId,
-                    requestId = request.requestId,
+                    requestId = request.id,
                     totalCost = solution.totalDistance,
                     createdAt = startTime,
                     completedAt = Instant.now(),
@@ -73,7 +78,7 @@ class MtspSolverService(
                             currentSolution,
                             index,
                             route.map { point ->
-                                request.cities[point.id].name
+                                request.points[point.id]
                             }
                         )
                     )
@@ -82,7 +87,7 @@ class MtspSolverService(
                 mtspSolutionRepository.save(currentSolution)
                 Thread.sleep(100)
             }
-        logger.info { "Solving for `${request.requestId}` is completed!" }
+        logger.info { "Solving for `${request.id}` is completed!" }
     }
 
     companion object {
