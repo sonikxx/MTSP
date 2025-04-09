@@ -1,18 +1,17 @@
 package api.dto
 
-import api.converter.StringArrayConverter
+import api.converter.StringListConverter
+import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
 import jakarta.persistence.Convert
 import jakarta.persistence.Entity
-import jakarta.persistence.Table
-import jakarta.persistence.Id
-import jakarta.persistence.Enumerated
 import jakarta.persistence.EnumType
-import jakarta.persistence.OneToMany
-import jakarta.persistence.CascadeType
+import jakarta.persistence.Enumerated
 import jakarta.persistence.FetchType
+import jakarta.persistence.Id
+import jakarta.persistence.OneToMany
+import jakarta.persistence.Table
 import java.util.*
-
 
 enum class RequestStatus {
     QUEUED, SOLVED, CANCELED, FAILED
@@ -36,9 +35,9 @@ class MtspRequest() {
     @Column(name = "salesman_number", nullable = false)
     var salesmanNumber: Long = 0
 
-    @Convert(converter = StringArrayConverter::class)
+    @Convert(converter = StringListConverter::class)
     @Column(name = "points", nullable = false)
-    var points: Array<String> = emptyArray()
+    var points: List<City> = emptyList()
 
     @Column(nullable = false, length = 50)
     lateinit var algorithm: String
@@ -52,7 +51,7 @@ class MtspRequest() {
     constructor(
         userId: Long,
         salesmanNumber: Long,
-        points: Array<String>,
+        points: List<City>,
         algorithm: String,
         algorithmParams: String? = null,
         status: RequestStatus = RequestStatus.QUEUED

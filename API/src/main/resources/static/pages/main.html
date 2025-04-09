@@ -9,19 +9,27 @@
 <body>
 <div class="container">
     <header>
-        <h1>Multiple Traveling Salesman Problem (MTSP)</h1>
-        <p>Click on the map to add cities to the route and solve the MTSP efficiently.</p>
+        <div class="organization">
+            <p><span class="organization-name">Your Organization Name</span></p>
+        </div>
     </header>
 
     <section class="content">
         <canvas id="map"></canvas>
         <button id="solveMTSPButton">Solve MTSP</button>
-
-        <div class="coordinates">
-            <h3>Added Cities:</h3>
-            <ul id="cityList"></ul>
-        </div>
     </section>
+    <h3>Upload MTSP JSON File</h3>
+    <!-- Drop zone for dragging files -->
+<!--    <div id="dropZone" style="width: 100%; height: 300px; border: 2px dashed #ccc; text-align: center; line-height: 300px;">-->
+<!--        Drag and drop a JSON file here-->
+<!--    </div>-->
+
+    <!-- Fallback file input -->
+    <input type="file" id="fileInput" accept=".json"/>
+<!--    TODO: download result. Not request! -->
+    <button onclick="downloadFile()">Download Result</button>
+
+    <pre id="response"></pre>
 </div>
 
 
@@ -29,6 +37,21 @@
 <script src="../js/script.js"></script>
 <script>
     const graphDrawer = new GraphDrawer('map');
+
+    document.getElementById('fileInput').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+
+        reader.onload = function(e) {
+            const data = JSON.parse(e.target.result);
+            graphDrawer.loadMap(data);
+        };
+
+        reader.readAsText(file);
+    });
+
+
+
     document.getElementById('solveMTSPButton').addEventListener('click', async function() {
         if (graphDrawer.points.length < 2) {
             console.log("Please add at least two cities to solve the problem.");
@@ -41,7 +64,15 @@
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ salesmanNumber: 2, cities: graphDrawer.points })
+            body: JSON.stringify(
+                {
+                    salesmanNumber: graphDrawer.salesmanNumber,
+                    cities: graphDrawer.points,
+                    distances: graphDrawer.distances,
+                    algorithm: graphDrawer.algorithm,
+                    algorithmParams: graphDrawer.algorithmParams
+                }
+            )
         });
 
         if (response.ok) {
@@ -62,6 +93,45 @@
             alert("Error solving MTSP.");
         }
     });
+
+
+    function downloadFile() {
+        // TODO: make it disabled until the result is ready
+
+        const data = graphDrawer.dumpMap();
+
+        const blob = new Blob([data], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `mtsp-result.json`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    }
+
+
+    // document.getElementById('dropZone').addEventListener('dragover', handleDragOver);
+    // document.getElementById('dropZone').addEventListener('drop', handleDrop);
+    // function handleDragOver(e) {
+    //     e.preventDefault();
+    //     document.getElementById('dropZone').style.backgroundColor = '#f0f0f0';
+    // }
+    // function handleDrop(e) {
+    //     e.preventDefault();
+    //     document.getElementById('dropZone').style.background = 'none';
+    //
+    //     const file = e.dataTransfer.files[0];
+    //     if (file) {
+    //         const reader = new FileReader();
+    //         reader.onload = function(e) {
+    //             const data = JSON.parse(e.target.result);
+    //             graphDrawer.loadMap(data);
+    //         };
+    //         reader.readAsText(file);
+    //     }
+    // }
 </script>
 
 </body>

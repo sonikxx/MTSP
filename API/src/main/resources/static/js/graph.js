@@ -17,8 +17,50 @@ class GraphDrawer {
             '#4f6d7a'  // Серый с голубым оттенком
         ];
 
+        // TODO: factor out in another Super class, that stores algorithm and other settings
+        this.salesmanNumber = 3;
+        this.algorithm = 'bruteForce';
+        this.algorithmParams = {
+            maxIterations: 1000,
+            // acceptableCost: 1000000,
+        }
+
         this.canvas.addEventListener('click', this.addPoint.bind(this));
         this.drawGrid();
+    }
+
+    loadMap(data) {
+        this.points = [];
+        this.routes = [];
+        this.distances = data.distances;
+
+        data.cities.forEach(city => {
+            const point = {
+                name: city.name,
+                x: city.x,
+                y: city.y
+            };
+            this.points.push(point);
+        });
+
+        this.drawGrid();
+        this.drawPoints();
+    }
+
+    dumpMap() {
+        const mapData = {
+            salesmanNumber: this.salesmanNumber,
+            cities: this.points.map(point => ({
+                name: point.name,
+                x: point.x,
+                y: point.y
+            })),
+            distances: this.distances,
+            algorithm: this.algorithm,
+            algorithmParams: this.algorithmParams
+        };
+
+        return JSON.stringify(mapData, null, 4);
     }
 
     calculateDistance(pointA, pointB) {

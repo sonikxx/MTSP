@@ -40,7 +40,7 @@ class MtspRequest {
 
     @Convert(converter = StringListConverter::class)
     @Column(name = "points", nullable = false)
-    var points: List<String> = emptyList()
+    var cities: List<City> = emptyList()
 
     @Column(nullable = false)
     lateinit var algorithm: String

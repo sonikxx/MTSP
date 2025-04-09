@@ -20,15 +20,15 @@ class MtspRoute() {
 
     @Convert(converter = StringListConverter::class)
     @Column(name = "points", nullable = false)
-    var points: List<String> = emptyList()
+    var cities: List<City> = emptyList()
 
     constructor(
         solution: MtspSolution,
         salesmanIndex: Int = 0,
-        points: List<String> = emptyList()
+        cities: List<City> = emptyList()
     ) : this() {
         this.solution = solution
         this.salesmanIndex = salesmanIndex
-        this.points = points
+        this.cities = cities
     }
 }

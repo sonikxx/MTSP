@@ -1,6 +1,5 @@
 package solver.service
 
-import com.example.grpc.MtspSolverRequest
 import io.grpc.Status
 import io.grpc.StatusException
 import mu.KotlinLogging
@@ -17,22 +16,22 @@ class MtspSolverService(
 ) {
 
     suspend fun solve(request: MtspRequest) {
-        val namesToId = mutableMapOf<String, Int>()
-        request.points.forEach { point ->
-            namesToId[point] = namesToId.size
+        val namesToId = mutableMapOf<City, Int>()
+        request.cities.forEach { city ->
+            namesToId[city] = namesToId.size
         }
-        if (namesToId.size != request.points.size) {
+        if (namesToId.size != request.cities.size) {
             logger.error { "${request.id}: Request contains duplicate city names!" }
             throw StatusException(Status.INVALID_ARGUMENT.withDescription("Duplicate city names are not allowed"))
         }
 
-        if (request.salesmanNumber <= 0 || request.salesmanNumber > request.points.size) {
+        if (request.salesmanNumber <= 0 || request.salesmanNumber > request.cities.size) {
             logger.error { "${request.id}: Invalid number of salesmen: ${request.salesmanNumber}" }
             throw StatusException(Status.INVALID_ARGUMENT.withDescription("Number of salesmen must be positive and less than the number of cities"))
         }
 
-        val cities = request.points.map{ point ->
-            Point(namesToId[point]!!)
+        val points = request.cities.map{ city ->
+            Point(namesToId[city]!!)
         }.shuffled()
 
         val startTime = Instant.now()
@@ -60,7 +59,7 @@ class MtspSolverService(
             distances[edge.fromNode][edge.toNode] = edge.distance
         }
 
-        tspAlgorithm.solve(cities, distances, request.salesmanNumber)
+        tspAlgorithm.solve(points, distances, request.salesmanNumber)
             .collect { (status, solution) ->
                 logger.info { "best = ${solution.totalDistance} for: ${solution.cities}" }
 
@@ -77,9 +76,7 @@ class MtspSolverService(
                         MtspRoute(
                             currentSolution,
                             index,
-                            route.map { point ->
-                                request.points[point.id]
-                            }
+                            route.map { point -> request.cities[point.id] }
                         )
                     )
                 }

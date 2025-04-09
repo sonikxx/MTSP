@@ -13,16 +13,16 @@ import solver.dto.SolutionStatus
 class BruteForceAlgorithm : MtspAlgorithm() {
     override val name: String = "bruteForce"
 
-    override fun solve(cities: List<Point>, numSalesmen: Int) : Flow<Pair<SolutionStatus, AlgorithmSolution>> = flow {
-        logger.info { "Start MTSP algorithm" }
-        if (numSalesmen <= 0 || cities.isEmpty()) return@flow
+    override fun solve(points: List<Point>, distances: Array<Array<Double>>, numSalesmen: Int) : Flow<Pair<SolutionStatus, AlgorithmSolution>> = flow {
+        logger.info { "Start solving with $name algorithm" }
+        if (numSalesmen <= 0 || points.isEmpty()) return@flow
 
-        val allPermutations = cities.permutations()
-        val bestResult = AlgorithmSolution(emptyList(), -1, Double.MAX_VALUE)
+        val allPermutations = points.permutations()
+        val bestResult = AlgorithmSolution(emptyList(), numSalesmen, Double.MAX_VALUE)
         for (perm in allPermutations) {
             val allDistributions = distributeAmongSalesmen(numSalesmen, perm)
             for (solution in allDistributions) {
-                val totalDistance = calculateTotalDistance1(solution)
+                val totalDistance = calculateTotalDistance(distances, solution)
                 if (totalDistance < bestResult.totalDistance) {
                     bestResult.totalDistance = totalDistance
                     bestResult.cities = solution
@@ -32,24 +32,7 @@ class BruteForceAlgorithm : MtspAlgorithm() {
             }
         }
         emit(Pair(SolutionStatus.SOLVED, bestResult))
-        logger.info { "End MTSP algorithm" }
-    }
-
-    private fun calculateTotalDistance1(routes: List<List<Point>>): Double {
-        var totalDistance = 0.0
-        for (route in routes) {
-            totalDistance += calculateTotalDistance2(route)
-        }
-        return totalDistance
-    }
-
-    private fun calculateTotalDistance2(route: List<Point>): Double {
-        var totalDistance = 0.0
-        for (i in 0 until route.size - 1) {
-            totalDistance += distance(route[i], route[i + 1])
-        }
-        totalDistance += distance(route.last(), route.first())
-        return totalDistance
+        logger.info { "End solving with $name algorithm" }
     }
 
     // Extension function to generate all permutations of a list

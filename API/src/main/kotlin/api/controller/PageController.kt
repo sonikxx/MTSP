@@ -4,7 +4,6 @@ import api.service.PageService
 import org.springframework.core.io.Resource
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
-import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
@@ -39,12 +38,12 @@ class PageController(
 }
 
 // TODO: use Thymeleaf
-//@Controller
-//class MainPageController {
+// @Controller
+// class MainPageController {
 //
 //    @GetMapping("main/{organizationId}")
 //    fun mainPage(@PathVariable organizationId: String, model: Model): String {
 //        model.addAttribute("organizationName", "Your Organization Name")
 //        return "mainPage" // this refers to src/main/resources/templates/mainPage.html
 //    }
-//}
+// }

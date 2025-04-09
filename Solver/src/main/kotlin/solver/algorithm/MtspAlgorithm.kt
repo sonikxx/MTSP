@@ -5,15 +5,13 @@ import solver.dto.AlgorithmSolution
 import solver.dto.Point
 import solver.dto.SolutionStatus
 import kotlin.math.min
-import kotlin.math.pow
-import kotlin.math.sqrt
 
 abstract class MtspAlgorithm {
 
     abstract val name: String
 
     abstract fun solve(
-        cities: List<Point>,
+        points: List<Point>,
         distances: Array<Array<Double>>,
         numSalesmen: Int
     ): Flow<Pair<SolutionStatus, AlgorithmSolution>>

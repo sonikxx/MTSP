@@ -1,6 +1,6 @@
 package api.dto
 
-import api.converter.StringArrayConverter
+import api.converter.StringListConverter
 import jakarta.persistence.Column
 import jakarta.persistence.Convert
 import jakarta.persistence.Entity
@@ -27,7 +27,7 @@ class Route {
     @Column(name = "salesman_index", nullable = false)
     var salesmanIndex: Int = 0
 
-    @Convert(converter = StringArrayConverter::class)
+    @Convert(converter = StringListConverter::class)
     @Column(name = "points", nullable = false)
-    var points: Array<String> = emptyArray()
+    var points: List<City> = emptyList()
 }

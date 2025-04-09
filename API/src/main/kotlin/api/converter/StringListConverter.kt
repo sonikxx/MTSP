@@ -1,11 +1,10 @@
-package solver.converter
+package api.converter
 
-import jakarta.persistence.AttributeConverter
-import jakarta.persistence.Converter
-
+import api.dto.City
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import solver.dto.City
+import jakarta.persistence.AttributeConverter
+import jakarta.persistence.Converter
 
 @Converter
 class StringListConverter : AttributeConverter<List<City>, String> {
@@ -23,4 +22,3 @@ class StringListConverter : AttributeConverter<List<City>, String> {
         }
     }
 }
-
