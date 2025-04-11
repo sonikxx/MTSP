@@ -43,7 +43,7 @@ class AuthController(
         response.addCookie(cookie)
 
         return ResponseEntity.status(HttpStatus.FOUND)
-            .header(HttpHeaders.LOCATION, "/main/${user.organization.id}")
+            .header(HttpHeaders.LOCATION, "/main/${user.organization.id}/${user.id}")
             .build()
     }
 

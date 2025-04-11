@@ -29,9 +29,9 @@ class PageController(
         return ResponseEntity.ok().contentType(MediaType.TEXT_HTML).body(file)
     }
 
-    @GetMapping("main/{organizationId}")
-    fun mainPage(@PathVariable organizationId: Long): ResponseEntity<Resource> {
-        val file = pageService.mainPage(organizationId)
+    @GetMapping("main/{organizationId}/{userId}")
+    fun mainPage(@PathVariable organizationId: Long, @PathVariable userId: Long): ResponseEntity<Resource> {
+        val file = pageService.mainPage(organizationId, userId)
 
         return ResponseEntity.ok().contentType(MediaType.TEXT_HTML).body(file)
     }

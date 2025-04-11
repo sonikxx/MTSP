@@ -13,7 +13,6 @@ body {
     background-color: #1e1e1e;
     padding: 20px;
     border-radius: 8px;
-    box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
     width: 300px;
     text-align: center;
 }
@@ -42,7 +41,7 @@ input {
 }
 
 button {
-    background-color: #6200ea;
+    background-color: #2563eb;
     color: white;
     padding: 10px;
     border: none;
@@ -52,5 +51,5 @@ button {
 }
 
 button:hover {
-    background-color: #3700b3;
+    background-color: #60a5fa;
 }

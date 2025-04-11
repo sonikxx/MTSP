@@ -1,7 +1,8 @@
-class GraphDrawer {
-    constructor(canvasId, width = 500, height = 500) {
+export class GraphDrawer {
+    constructor(canvasId, isReadOnly = true, width = 500, height = 500) {
         this.canvas = document.getElementById(canvasId);
         this.ctx = this.canvas.getContext('2d');
+
         this.canvas.width = width;
         this.canvas.height = height;
         this.points = [];
@@ -17,16 +18,26 @@ class GraphDrawer {
             '#4f6d7a'  // Серый с голубым оттенком
         ];
 
-        // TODO: factor out in another Super class, that stores algorithm and other settings
-        this.salesmanNumber = 3;
-        this.algorithm = 'bruteForce';
-        this.algorithmParams = {
-            maxIterations: 1000,
-            // acceptableCost: 1000000,
+        this.canvas.style.cursor = 'not-allowed';
+        if (isReadOnly === true) {
+            this.canvas.addEventListener('click', this.addPoint.bind(this));
+            this.canvas.style.cursor = 'crosshair';
         }
 
-        this.canvas.addEventListener('click', this.addPoint.bind(this));
+        this.setupHiDpiCanvas(width, height);
         this.drawGrid();
+    }
+
+    setupHiDpiCanvas(cssWidth, cssHeight) {
+        const dpr = window.devicePixelRatio || 1;
+
+        this.canvas.width = cssWidth * dpr;
+        this.canvas.height = cssHeight * dpr;
+
+        this.canvas.style.width = `${cssWidth}px`;
+        this.canvas.style.height = `${cssHeight}px`;
+
+        this.ctx.scale(dpr, dpr);
     }
 
     loadMap(data) {
@@ -47,20 +58,14 @@ class GraphDrawer {
         this.drawPoints();
     }
 
-    dumpMap() {
-        const mapData = {
-            salesmanNumber: this.salesmanNumber,
+    getMapData() {
+        return {
             cities: this.points.map(point => ({
                 name: point.name,
                 x: point.x,
                 y: point.y
             })),
-            distances: this.distances,
-            algorithm: this.algorithm,
-            algorithmParams: this.algorithmParams
         };
-
-        return JSON.stringify(mapData, null, 4);
     }
 
     calculateDistance(pointA, pointB) {
@@ -122,7 +127,20 @@ class GraphDrawer {
             this.ctx.arc(point.x, point.y, 5, 0, Math.PI * 2);
             this.ctx.fillStyle = "#60a5fa";
             this.ctx.fill();
-            this.ctx.fillText(point.name, point.x + 8, point.y - 8);
+
+
+            const text = point.name;
+            const textWidth = this.ctx.measureText(text).width;
+            const canvasWidth = this.canvas.clientWidth;
+
+            let textX;
+            if (point.x + 8 + textWidth > canvasWidth) {
+                textX = point.x - textWidth - 8;
+            } else {
+                textX = point.x + 8;
+            }
+            this.ctx.font = "bold 16px Arial";
+            this.ctx.fillText(text, textX, point.y - 8);
         });
     }
 

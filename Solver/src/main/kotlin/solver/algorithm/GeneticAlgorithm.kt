@@ -16,7 +16,7 @@ class GeneticAlgorithm : MtspAlgorithm() {
     override val name: String = "genetic"
 
     override fun solve(
-        cities: List<Point>,
+        points: List<Point>,
         distances: Array<Array<Double>>,
         numSalesmen: Int
     ): Flow<Pair<SolutionStatus, AlgorithmSolution>> = flow {
@@ -27,7 +27,7 @@ class GeneticAlgorithm : MtspAlgorithm() {
         val mutationRate = 0.1
         val updateInterval = 50
 
-        var population = generateInitialPopulation(populationSize, cities, numSalesmen)
+        var population = generateInitialPopulation(populationSize, points, numSalesmen)
         var best = population.minByOrNull { calculateTotalDistance(distances, it) }!!
         var currentBestGenerationNumber = 0
 
