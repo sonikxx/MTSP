@@ -4,7 +4,7 @@ spring:
 
   datasource:
 #    url: jdbc:postgresql://rc1b-6byyaq851eo4h8wd.mdb.yandexcloud.net:6432/mtsp
-    url: jdbc:postgresql://localhost:5432/mtsp
+    url: jdbc:postgresql://localhost:5469/mtsp
     username: mtsp_solver
     password: 12345678
     driver-class-name: org.postgresql.Driver
