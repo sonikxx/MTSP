@@ -1,10 +1,11 @@
-import { GraphDrawer } from './graph.js';
+import {GraphDrawer} from './graph.js';
 
 
 export class MtspPageController {
     constructor(fileInputId, solveButtonId, canvasId) {
         this.fileInput = document.getElementById(fileInputId);
         this.solveButton = document.getElementById(solveButtonId);
+        this.canselButton = document.getElementById('canselButton');
         this.downloadResultButton = document.getElementById('downloadResultButton');
 
         this.canvas = document.getElementById(canvasId);
@@ -22,6 +23,7 @@ export class MtspPageController {
         }
         this.result = null;
 
+        this.activePolling = null;
         this.pollingInterval = 300;
         this.pollingMaxRetries = 100;
     }
@@ -30,6 +32,7 @@ export class MtspPageController {
         this.solveButton.addEventListener('click', (e) => this.solve(e));
         this.fileInput.addEventListener('change', (e) => this.loadFile(e));
         this.downloadResultButton.addEventListener('click', (e) => this.downloadResult(e));
+        this.canselButton.addEventListener('click', (e) => this.cancelRequest(e));
     }
 
     switchToSolvingMode() {
@@ -155,14 +158,15 @@ export class MtspPageController {
         const pollingKey = `polling-${requestId}`;
         let attempts = parseInt(localStorage.getItem(pollingKey), 10) || 0;
 
-        async function poll() {
+        const self = this;
+
+        const poll = async () => {
             try {
                 const response = await fetch(`/protected/v1/result/${requestId}`);
                 const data = await response.json();
                 if (data.status === "SOLVED") {
                     console.log("Solution found!");
-                    clearInterval(pollingInterval);
-                    localStorage.removeItem(pollingKey);
+                    this.stopPolling(requestId);
                     onSuccess(data);
                 } else if (data.status === "INTERMEDIATE") {
                     console.log("Still working...");
@@ -172,16 +176,14 @@ export class MtspPageController {
                 }
             } catch (error) {
                 console.log("Error while polling: " + error);
-                clearInterval(pollingInterval);
-                localStorage.removeItem(pollingKey);
+                this.stopPolling(requestId);
             }
         }
 
-        const pollingInterval = setInterval(() => {
+        this.activePolling = setInterval(() => {
             if (attempts > this.pollingMaxRetries) {
                 console.log("Max attempts exceeded");
-                clearInterval(pollingInterval);
-                localStorage.removeItem(pollingKey);
+                this.stopPolling(requestId);
                 return;
             }
             attempts++;
@@ -189,5 +191,41 @@ export class MtspPageController {
             poll();
         }, this.pollingInterval);
     }
+
+    stopPolling(requestId) {
+        const pollingKey = `polling-${requestId}`;
+        const intervalId = this.activePolling;
+        if (intervalId) {
+            clearInterval(intervalId);
+            this.activePolling = null;
+            localStorage.removeItem(pollingKey);
+            console.log(`Stopped polling for request ${requestId}`);
+        }
+    }
+
+    cancelRequest(e) {
+        if (!this.requestId) {
+            alert("You have to start solving task before cancelling it.");
+            return;
+        }
+
+        fetch(`/protected/v1/solve/${this.requestId}`, {
+            method: "DELETE"
+        })
+        .then(response => {
+            if (response.ok) {
+                this.stopPolling(this.requestId);
+                this.switchToReadyMode();
+                alert("Request cancelled.");
+            } else {
+                alert("Failed to cancel the request.");
+            }
+        })
+        .catch(error => {
+            console.log("Cancel error:", error);
+            alert("An error occurred while cancelling.");
+        });
+    }
+
 
 }
