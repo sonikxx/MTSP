@@ -1,21 +1,11 @@
 
-CREATE TABLE mtsp_organizations (
-                                    id SERIAL PRIMARY KEY,
-                                    name VARCHAR(255) NOT NULL UNIQUE,
-                                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
 CREATE TABLE mtsp_users (
                             id SERIAL PRIMARY KEY,
-                            organization_id INT NOT NULL,
                             first_name VARCHAR(100) NOT NULL,
                             last_name VARCHAR(100) NOT NULL,
                             email VARCHAR(255) UNIQUE NOT NULL,
                             password_hash TEXT NOT NULL,
-                            is_admin BOOLEAN DEFAULT FALSE,
-                            last_activity TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-
-                            FOREIGN KEY (organization_id) REFERENCES mtsp_organizations(id) ON DELETE CASCADE
+                            last_activity TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE mtsp_solutions (
@@ -39,26 +29,39 @@ CREATE TABLE mtsp_routes (
                              FOREIGN KEY (solution_id) REFERENCES mtsp_solutions(id) ON DELETE CASCADE
 );
 
+CREATE TABLE mtsp_maps
+(
+    id        SERIAL PRIMARY KEY,
+    user_id   INT          NOT NULL,
+    name      VARCHAR(255) NOT NULL,
+    is_public BOOLEAN DEFAULT FALSE,
+    points    TEXT         NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES mtsp_users (id) ON DELETE CASCADE
+);
+
 CREATE TABLE mtsp_requests (
                                id VARCHAR(40) PRIMARY KEY,
                                user_id          INT         NOT NULL,
                                status           VARCHAR(20) NOT NULL DEFAULT 'QUEUED' CHECK (status IN ('QUEUED', 'SOLVED', 'CANCELED', 'FAILED')),
                                created_at       TIMESTAMP            DEFAULT CURRENT_TIMESTAMP,
+
+                               map_id           INT         NOT NULL,
                                salesman_number  INT         NOT NULL,
-                               points           TEXT        NOT NULL,
                                algorithm        VARCHAR(50) NOT NULL,
-                               algorithm_params TEXT
+                               algorithm_params TEXT,
+                               FOREIGN KEY (user_id) REFERENCES mtsp_users(id) ON DELETE CASCADE,
+                               FOREIGN KEY (map_id) REFERENCES mtsp_maps(id) ON DELETE CASCADE
 );
 
 CREATE TABLE mtsp_edges
 (
     id SERIAL PRIMARY KEY,
-    request_id VARCHAR(40) NOT NULL,
+    map_id INT NOT NULL,
     from_node INT NOT NULL,
     to_node   INT NOT NULL,
     distance  DOUBLE PRECISION NOT NULL,
 
-    FOREIGN KEY (request_id) REFERENCES mtsp_requests (id) ON DELETE CASCADE
+    FOREIGN KEY (map_id) REFERENCES mtsp_maps (id) ON DELETE CASCADE
 );
 
 CREATE TABLE mtsp_logs

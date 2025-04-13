@@ -72,10 +72,10 @@ export class MtspPageController {
     }
 
     solve(e) {
-        if (this.graphDrawer.points.length < 2) {
-            console.log("Please add at least two cities to solve the problem.");
-            return;
-        }
+        // if (this.graphDrawer.points.length < 2) {
+        //     console.log("Please add at least two cities to solve the problem.");
+        //     return;
+        // }
 
         this.switchToSolvingMode();
         fetch('/protected/v1/solve', {
@@ -84,9 +84,8 @@ export class MtspPageController {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
+                mapId: 1,
                 salesmanNumber: this.salesmanNumber,
-                cities: this.graphDrawer.points,
-                distances: this.graphDrawer.distances,
                 algorithm: this.algorithm,
                 algorithmParams: this.algorithmParams
             })
@@ -151,7 +150,6 @@ export class MtspPageController {
         document.body.removeChild(link);
         URL.revokeObjectURL(url);
     }
-
 
     startPoling(requestId, onIntermediate, onSuccess) {
         console.log("Start poling for request " + requestId);

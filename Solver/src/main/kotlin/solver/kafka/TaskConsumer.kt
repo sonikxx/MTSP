@@ -17,7 +17,7 @@ class TaskConsumer(
         // TODO: only one consumer for now
         logger.info { "Received task: $requestId" }
 
-        mtspRequestRepository.findWithEdgesById(requestId)?.let { request ->
+        mtspRequestRepository.findWithMapAndEdgesById(requestId)?.let { request ->
             if (request.status == RequestStatus.CANCELED) {
                 logger.info { "Task is already canceled: $request" }
                 return

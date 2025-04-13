@@ -12,8 +12,8 @@ import solver.dto.RequestStatus
 
 @Repository
 interface MtspRequestRepository : JpaRepository<MtspRequest, String> {
-    @EntityGraph(attributePaths = ["edges"])
-    fun findWithEdgesById(id: String): MtspRequest?
+    @EntityGraph(attributePaths = ["map", "map.edges"])
+    fun findWithMapAndEdgesById(id: String): MtspRequest?
 
     @Query("SELECT r.status FROM MtspRequest r WHERE r.id = :id")
     fun findStatusById(@Param("id") id: String): RequestStatus?

@@ -20,14 +20,10 @@ class JwtInterceptor(
         }
 
         request.setAttribute(USER_ID, claims[USER_ID].toString().toLong())
-        request.setAttribute(ORGANIZATION_ID, claims[ORGANIZATION_ID].toString().toLong())
-        request.setAttribute(IS_ADMIN, claims[IS_ADMIN].toString().toBoolean())
         return true
     }
 
     companion object {
         private const val USER_ID = "userId"
-        private const val ORGANIZATION_ID = "organizationId"
-        private const val IS_ADMIN = "isAdmin"
     }
 }

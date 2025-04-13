@@ -19,25 +19,25 @@ class MtspEdge() {
     var id: Long = 0
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "request_id", nullable = false)
-    lateinit var request: MtspRequest
+    @JoinColumn(name = "map_id", nullable = false)
+    lateinit var map: MtspMap
 
     @Column(name = "from_node", nullable = false)
-    var fromNode: Long = 0
+    var fromNode: Int = 0
 
     @Column(name = "to_node", nullable = false)
-    var toNode: Long = 0
+    var toNode: Int = 0
 
     @Column(nullable = false)
     var distance: Double = 0.0
 
     constructor(
-        request: MtspRequest,
-        fromNode: Long,
-        toNode: Long,
+        map: MtspMap,
+        fromNode: Int,
+        toNode: Int,
         distance: Double
     ) : this() {
-        this.request = request
+        this.map = map
         this.fromNode = fromNode
         this.toNode = toNode
         this.distance = distance

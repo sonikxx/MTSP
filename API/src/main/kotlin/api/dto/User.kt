@@ -17,10 +17,6 @@ class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long = 0
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "organization_id", nullable = false)
-    lateinit var organization: Organization
-
     @Column(name = "first_name", nullable = false)
     lateinit var firstName: String
 
@@ -32,9 +28,6 @@ class User {
 
     @Column(name = "password_hash", nullable = false)
     lateinit var passwordHash: String
-
-    @Column(name = "is_admin", nullable = false)
-    var isAdmin: Boolean = false
 
     @Column(name = "last_activity", nullable = false)
     var lastActivity: Instant = Instant.now()

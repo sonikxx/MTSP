@@ -17,9 +17,14 @@ class PageService {
             logger.info { "request login page" }
         }
 
-    fun mainPage(organizationId: Long, userId: Long): ClassPathResource =
+    fun create(): ClassPathResource =
+        ClassPathResource("static/pages/create.html").apply {
+            logger.info { "request create page" }
+        }
+
+    fun mainPage(userId: Long, mapId: Long): ClassPathResource =
         ClassPathResource("static/pages/main.html").apply {
-            logger.info { "request main page for organization: $organizationId by user: $userId" }
+            logger.info { "request main page for user: $userId. Map id: $mapId" }
         }
 
     companion object {

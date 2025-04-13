@@ -33,20 +33,20 @@ class MtspSolverService(
     @OptIn(ObsoleteCoroutinesApi::class)
     suspend fun solve(request: MtspRequest) {
         val namesToId = mutableMapOf<City, Int>()
-        request.cities.forEach { city ->
+        request.map.cities.forEach { city ->
             namesToId[city] = namesToId.size
         }
-        if (namesToId.size != request.cities.size) {
+        if (namesToId.size != request.map.cities.size) {
             logger.error { "${request.id}: Request contains duplicate city names!" }
             throw StatusException(Status.INVALID_ARGUMENT.withDescription("Duplicate city names are not allowed"))
         }
 
-        if (request.salesmanNumber <= 0 || request.salesmanNumber > request.cities.size) {
+        if (request.salesmanNumber <= 0 || request.salesmanNumber > request.map.cities.size) {
             logger.error { "${request.id}: Invalid number of salesmen: ${request.salesmanNumber}" }
             throw StatusException(Status.INVALID_ARGUMENT.withDescription("Number of salesmen must be positive and less than the number of cities"))
         }
 
-        val points = request.cities.map{ city ->
+        val points = request.map.cities.map{ city ->
             Point(namesToId[city]!!)
         }.shuffled()
 
@@ -71,7 +71,7 @@ class MtspSolverService(
         val distances = Array(nodeCount) { Array(nodeCount) { Double.POSITIVE_INFINITY } }
 
         // Populate with actual distances
-        for (edge in request.edges) {
+        for (edge in request.map.edges) {
             distances[edge.fromNode][edge.toNode] = edge.distance
         }
 
@@ -79,7 +79,7 @@ class MtspSolverService(
         val solvingJob = scope.launch {
             tspAlgorithm.solve(points, distances, request.salesmanNumber)
                 .collect { (status, solution) ->
-                    logger.info { "reqId = ${request.id} | best = ${solution.totalDistance} for size ${request.cities.size}" }
+                    logger.info { "reqId = ${request.id} | best = ${solution.totalDistance} for size ${request.map.cities.size}" }
 
                     val currentSolution = MtspSolution(
                         userId = request.userId,
@@ -94,7 +94,7 @@ class MtspSolverService(
                             MtspRoute(
                                 currentSolution,
                                 index,
-                                route.map { point -> request.cities[point.id] }
+                                route.map { point -> request.map.cities[point.id] }
                             )
                         )
                     }

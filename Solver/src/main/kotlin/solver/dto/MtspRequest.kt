@@ -1,15 +1,6 @@
 package solver.dto
 
-import jakarta.persistence.Column
-import jakarta.persistence.Convert
-import jakarta.persistence.Entity
-import jakarta.persistence.Table
-import jakarta.persistence.Id
-import jakarta.persistence.Enumerated
-import jakarta.persistence.EnumType
-import jakarta.persistence.OneToMany
-import jakarta.persistence.CascadeType
-import jakarta.persistence.FetchType
+import jakarta.persistence.*
 import solver.converter.StringListConverter
 import java.time.Instant
 
@@ -28,6 +19,10 @@ class MtspRequest {
     @Column(name = "user_id", nullable = false)
     var userId: Int = 0
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "map_id", nullable = false)
+    lateinit var map: MtspMap
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     var status: RequestStatus = RequestStatus.QUEUED
@@ -38,16 +33,9 @@ class MtspRequest {
     @Column(name = "salesman_number", nullable = false)
     var salesmanNumber: Int = 0
 
-    @Convert(converter = StringListConverter::class)
-    @Column(name = "points", nullable = false)
-    var cities: List<City> = emptyList()
-
     @Column(nullable = false)
     lateinit var algorithm: String
 
     @Column(name = "algorithm_params", columnDefinition = "TEXT")
     var algorithmParams: String? = null
-
-    @OneToMany(mappedBy = "request", cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.LAZY)
-    var edges: List<MtspEdge> = mutableListOf()
 }

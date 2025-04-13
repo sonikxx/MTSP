@@ -1,15 +1,9 @@
--- Добавляем организации
-INSERT INTO mtsp_organizations (name) VALUES
-      ('OpenAI'),
-      ('Google'),
-      ('Microsoft')
-ON CONFLICT DO NOTHING;
 
 -- Добавляем пользователей
-INSERT INTO mtsp_users (organization_id, first_name, last_name, email, password_hash, is_admin) VALUES
-    (1, 'Alice', 'Smith', '123', '123', TRUE),
-    (1, 'Bob', 'Brown', 'bob@example.com', 'hashed_password2', FALSE),
-    (2, 'Charlie', 'Davis', 'charlie@example.com', 'hashed_password3', FALSE)
+INSERT INTO mtsp_users (first_name, last_name, email, password_hash) VALUES
+    ('Alice', 'Smith', '123', '123'),
+    ('Bob', 'Brown', 'bob@example.com', 'hashed_password2'),
+    ('Charlie', 'Davis', 'charlie@example.com', 'hashed_password3')
 ON CONFLICT DO NOTHING;
 
 -- Добавляем решения

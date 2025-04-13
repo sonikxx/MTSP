@@ -20,8 +20,8 @@ class MtspEdge {
     var id: Long = 0
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "request_id", nullable = false)
-    lateinit var request: MtspRequest
+    @JoinColumn(name = "map_id", nullable = false)
+    lateinit var map: MtspMap
 
     @Column(name = "from_node", nullable = false)
     var fromNode: Int = 0

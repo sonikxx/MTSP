@@ -65,6 +65,7 @@ export class GraphDrawer {
                 x: point.x,
                 y: point.y
             })),
+            distances: this.distances
         };
     }
 

@@ -28,16 +28,15 @@ class MtspRequest() {
     @Column(name = "user_id", nullable = false)
     var userId: Long = 0
 
-    @Column(nullable = false)
+    @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
     var status: RequestStatus = RequestStatus.QUEUED
 
+    @Column(name = "map_id", nullable = false)
+    var mapId: Long = 0
+
     @Column(name = "salesman_number", nullable = false)
     var salesmanNumber: Long = 0
-
-    @Convert(converter = StringListConverter::class)
-    @Column(name = "points", nullable = false)
-    var points: List<City> = emptyList()
 
     @Column(nullable = false, length = 50)
     lateinit var algorithm: String
@@ -45,27 +44,19 @@ class MtspRequest() {
     @Column(name = "algorithm_params", columnDefinition = "TEXT")
     var algorithmParams: String? = null
 
-    @OneToMany(mappedBy = "request", cascade = [CascadeType.ALL], orphanRemoval = false, fetch = FetchType.LAZY)
-    var edges: MutableList<MtspEdge> = mutableListOf()
-
     constructor(
         userId: Long,
         salesmanNumber: Long,
-        points: List<City>,
+        mapId: Long,
         algorithm: String,
         algorithmParams: String? = null,
         status: RequestStatus = RequestStatus.QUEUED
     ) : this() {
         this.userId = userId
         this.salesmanNumber = salesmanNumber
-        this.points = points
+        this.mapId = mapId
         this.algorithm = algorithm
         this.algorithmParams = algorithmParams
         this.status = status
-    }
-
-    fun addEdge(edge: MtspEdge) {
-        edge.request = this
-        edges.add(edge)
     }
 }

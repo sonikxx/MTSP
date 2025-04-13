@@ -1,9 +1,6 @@
 package api.service
 
-import api.dto.MtspApiRequest
-import api.dto.MtspEdge
-import api.dto.MtspRequest
-import api.dto.RequestStatus
+import api.dto.*
 import api.repository.MtspRequestRepository
 import mu.KotlinLogging
 import org.springframework.stereotype.Service
@@ -17,23 +14,10 @@ class TaskService(
         val mtspRequest = MtspRequest(
             userId = userId,
             salesmanNumber = apiRequest.salesmanNumber,
-            points = apiRequest.cities,
+            mapId = apiRequest.mapId,
             algorithm = apiRequest.algorithm,
             algorithmParams = apiRequest.algorithmParams.toString()
         )
-
-        apiRequest.distances.forEachIndexed { fromNode, edge ->
-            edge.forEachIndexed { toNode, distance ->
-                mtspRequest.addEdge(
-                    MtspEdge(
-                        request = mtspRequest,
-                        fromNode = fromNode.toLong(),
-                        toNode = toNode.toLong(),
-                        distance = distance
-                    )
-                )
-            }
-        }
 
         return mtspRequestRepository.save(mtspRequest)
     }

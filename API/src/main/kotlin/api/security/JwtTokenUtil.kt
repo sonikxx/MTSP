@@ -14,13 +14,11 @@ class JwtTokenUtil(
 ) {
     private val key = Keys.hmacShaKeyFor(jwtProperties.secretKey.toByteArray())
 
-    fun generateToken(userId: Long, organizationId: Long, isAdmin: Boolean): String {
+    fun generateToken(userId: Long): String {
         return Jwts.builder()
             .claims(
                 mutableMapOf(
                     USER_ID to userId,
-                    ORGANIZATION_ID to organizationId,
-                    IS_ADMIN to isAdmin
                 )
             )
             .issuedAt(Date())
@@ -58,7 +56,5 @@ class JwtTokenUtil(
 
     companion object {
         private const val USER_ID = "userId"
-        private const val ORGANIZATION_ID = "organizationId"
-        private const val IS_ADMIN = "isAdmin"
     }
 }
