@@ -1,14 +1,14 @@
 /* Base styles for dark theme */
 body {
     background-color: #121212;
-    color: #ffffff;
-    font-family: Arial, sans-serif;
+    color: white;
+    font-family: 'Poppins', sans-serif;
     margin: 0;
     padding: 0;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;  /* Full height of the viewport */
+    height: 100vh;
     text-align: center;
 }
 
@@ -29,19 +29,19 @@ header h1 {
 
 header p {
     font-size: 18px;
-    color: #bbbbbb;
+    color: white;
 }
 
 .content p {
     font-size: 18px;
-    color: #cccccc;
+    color: white;
     line-height: 1.6;
 }
 
 .cta-button {
     display: inline-block;
     background-color: #2563eb;
-    color: #ffffff;
+    color: white;
     padding: 15px 30px;
     text-decoration: none;
     border-radius: 5px;

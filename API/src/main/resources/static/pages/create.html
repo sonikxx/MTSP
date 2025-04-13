@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,25 +5,49 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MTSP Problem Solver</title>
   <link rel="stylesheet" href="../css/create_style.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 <body>
 
 <header>
-  <div class="organization">
-    <p class="organization-name">Your Organization Name</p>
+  <div class="user">
+    <p class="user-name">leiaparm</p>
   </div>
 </header>
 
 <section class="content container">
   <div class="settings">
-    <button id="solveMTSPButton">Save</button>
+
+    <div class="settings-container">
+      <div class="input-field">
+        <label class="input-label" for="mapName">Enter map name:</label>
+        <input type="text" id="mapName" class="input-text" placeholder="">
+      </div>
+
+      <div class="radio-toggle-group">
+        <input type="radio" id="private" name="visibility" checked>
+        <label for="private">Private</label>
+        <input type="radio" id="public" name="visibility">
+        <label for="public">Public</label>
+      </div>
+
+      <div class="file-input-div">
+        <input type="file" id="fileInput" accept=".json" onchange="updateFileName()"/>
+        <label for="fileInput"><i class="fas fa-paperclip"></i> Choose File</label>
+        <span id="fileName"></span>
+      </div>
+    </div>
+
+    <div class="button-container">
+      <button id="solveMTSPButton">Save</button>
+    </div>
   </div>
-
-  <canvas id="map"></canvas>
-  <h3>Upload MTSP JSON File</h3>
-  <input type="file" id="fileInput" accept=".json"/>
+  <div>
+    <canvas id="map"></canvas>
+    <p>Click on the map to add cities to the route or choose file</p>
+  </div>
 </section>
-
 
 
 <script type="module" src="/js/graph.js"></script>
@@ -33,5 +56,18 @@
 <script type="module" src="../js/graph.js"></script>
 <script type="module" src="../js/createController.js"></script>
 
+
+<script>
+  function updateFileName() {
+    const input = document.getElementById('fileInput');
+    const fileNameSpan = document.getElementById('fileName');
+
+    if (input.files.length > 0) {
+      fileNameSpan.textContent = input.files[0].name;
+    } else {
+      fileNameSpan.textContent = '';
+    }
+  }
+</script>
 </body>
 </html>

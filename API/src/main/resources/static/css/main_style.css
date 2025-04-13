@@ -1,13 +1,14 @@
+/* Base styles for dark theme */
 body {
     background-color: #121212;
-    color: #ffffff;
-    font-family: Arial, sans-serif;
+    color: white;
+    font-family: 'Poppins', sans-serif;
     margin: 0;
     padding: 0;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    height: 100vh;  /* Full height of the viewport */
     text-align: center;
 }
 
@@ -18,7 +19,7 @@ body {
 }
 
 header {
-    color: #ffffff;
+    color: white;
     padding: 0 20px;
     text-align: right;
     font-size: 20px;
@@ -26,7 +27,7 @@ header {
 }
 
 .organization-name {
-    color: #ffffff;
+    color: white;
     font-size: 22px;
     text-align: right;
 }
@@ -38,7 +39,7 @@ header h1 {
 
 header p {
     font-size: 18px;
-    color: #bbbbbb;
+    color: white;
 }
 
 .content {
@@ -65,12 +66,12 @@ canvas {
 .coordinates {
     margin-left: 20px;
     text-align: left;
-    color: #ffffff;
+    color: white;
 }
 
 .coordinates h3 {
     font-size: 20px;
-    color: #ffffff;
+    color: white;
 }
 
 #cityList {
@@ -79,7 +80,7 @@ canvas {
 }
 
 #cityList li {
-    color: #ffffff;
+    color: white;
     font-size: 16px;
 }
 
@@ -87,7 +88,7 @@ button {
     padding: 12px 25px;
     margin-top: 20px;
     background-color: #2563eb;
-    color: #ffffff;
+    color: white;
     border: none;
     border-radius: 5px;
     font-size: 18px;

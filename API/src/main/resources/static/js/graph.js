@@ -11,11 +11,10 @@ export class GraphDrawer {
         this.pointIndex = 0;
         this.routes = [];
         this.colors = [
-            '#666666', // Темно-серый
-            '#3b6e3a', // Темно-зеленый
-            '#b0b0b0', // Теплый серый
-            '#7a4b3c', // Темно-коричневый
-            '#4f6d7a'  // Серый с голубым оттенком
+            '#FFA500',
+            '#FFD700',
+            '#32CD32',
+            '#FF69B4'
         ];
 
         this.canvas.style.cursor = 'not-allowed';
