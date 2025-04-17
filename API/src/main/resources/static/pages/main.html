@@ -10,22 +10,41 @@
     <link rel="stylesheet" href="../css/main_style.css">
 </head>
 <body>
-<div class="container">
-    <header>
-        <div class="organization">
-            <p><span class="organization-name">Your Organization Name</span></p>
-        </div>
-    </header>
 
-    <section class="content">
+<header>
+    <div class="user">
+        <p class="user-name">leiaparm</p>
+    </div>
+</header>
+
+<section class="content container">
+    <div class="settings">
+        <div class="settings-container">
+            <div class="input-field">
+                <label class="input-label" for="salesmanCount">Enter salesman count:</label>
+                <input type="number" id="salesmanCount" class="input-number" placeholder="" min="0">
+            </div>
+
+            <div class="algorithm-selector">
+                <label class="algorithm-selector-label" for="tspAlgorithm">Choose algorithm:</label>
+                <div class="custom-selector">
+                    <select id="tspAlgorithm" class="select-algorithm">
+                        <option value="brute-force">Brute Force</option>
+                        <option value="genetic-algorithm">Genetic algorithm</option>
+                        <option value="simulated-annealing ">Simulated annealing (Python)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div>
         <canvas id="map"></canvas>
-        <button id="solveMTSPButton">Solve MTSP</button>
-        <button id="canselButton">□</button>
-    </section>
-    <h3>Upload MTSP JSON File</h3>
-    <input type="file" id="fileInput" accept=".json"/>
-    <button id="downloadResultButton">Download Result</button>
-</div>
+        <button id="solveMTSPButton">Solve</button>
+        <button id="canselButton">Stop</button>
+        <button id="downloadResultButton">Download</button>
+    </div>
+</section>
 
 <script type="module" src="/js/graph.js"></script>
 <script type="module" src="/js/script.js"></script>

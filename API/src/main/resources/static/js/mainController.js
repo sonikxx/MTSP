@@ -2,8 +2,7 @@ import {GraphDrawer} from './graph.js';
 
 
 export class MtspPageController {
-    constructor(fileInputId, solveButtonId, canvasId) {
-        this.fileInput = document.getElementById(fileInputId);
+    constructor(solveButtonId, canvasId) {
         this.solveButton = document.getElementById(solveButtonId);
         this.canselButton = document.getElementById('canselButton');
         this.downloadResultButton = document.getElementById('downloadResultButton');
@@ -40,7 +39,6 @@ export class MtspPageController {
         this.mapId = pathParts[2];
 
         this.solveButton.addEventListener('click', (e) => this.solve(e));
-        this.fileInput.addEventListener('change', (e) => this.loadFile(e));
         this.downloadResultButton.addEventListener('click', (e) => this.downloadResult(e));
         this.canselButton.addEventListener('click', (e) => this.cancelRequest(e));
 
@@ -55,16 +53,12 @@ export class MtspPageController {
         this.solveButton.disabled = true;
         this.solveButton.innerText = 'Solving...';
 
-        this.fileInput.disabled = true;
-
         this.downloadResultButton.disabled = true;
     }
 
     switchToReadyMode() {
         this.solveButton.disabled = false;
         this.solveButton.innerText = 'Solve MTSP';
-
-        this.fileInput.disabled = false;
 
         this.downloadResultButton.disabled = false;
     }
@@ -243,5 +237,5 @@ export class MtspPageController {
 }
 
 
-const controller = new MtspPageController('fileInput', 'solveMTSPButton', 'map');
+const controller = new MtspPageController('solveMTSPButton', 'map');
 controller.init();
