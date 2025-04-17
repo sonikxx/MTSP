@@ -29,8 +29,8 @@ class PageController(
         return ResponseEntity.ok().contentType(MediaType.TEXT_HTML).body(file)
     }
 
-    @GetMapping("create")
-    fun create(): ResponseEntity<Resource> {
+    @GetMapping("create/{userId}")
+    fun create(@PathVariable userId: Long): ResponseEntity<Resource> {
         val file = pageService.create()
 
         return ResponseEntity.ok().contentType(MediaType.TEXT_HTML).body(file)

@@ -49,7 +49,7 @@ class MapController(
     }
 
     @GetMapping("/v1/get/map/{mapId}")
-    fun get(
+    fun getMap(
         @PathVariable mapId: Long,
         @RequestAttribute(name = "userId") userId: Long,
     ): ResponseEntity<MtspApiMap> {
@@ -69,6 +69,25 @@ class MapController(
                 distances = distances.map { it.toList() },
                 isPublic = map.isPublic
             )
+        )
+    }
+
+    @GetMapping("/v1/get/maps")
+    fun getAvailableMaps(
+        @RequestAttribute(name = "userId") userId: Long
+    ): ResponseEntity<List<MtspApiMap>> {
+        val maps = mtspMapRepository.findAllByUserIdOrIsPublicTrueDistinct(userId)
+
+        return ResponseEntity.ok(
+            maps.map { mtspMap ->
+                MtspApiMap(
+                    id = mtspMap.id,
+                    name = mtspMap.name,
+                    cities = emptyList(),
+                    distances = emptyList(),
+                    isPublic = mtspMap.isPublic
+                )
+            }
         )
     }
 }

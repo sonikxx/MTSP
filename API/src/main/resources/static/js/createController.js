@@ -10,9 +10,18 @@ class CreatePageController {
 
         const isReadOnlyGraph = !document.location.href.includes('main');
         this.graphDrawer = new GraphDrawer(canvasId, isReadOnlyGraph);
+
+        this.userId = null;
     }
 
     init() {
+        const pathParts = window.location.pathname.split('/');
+        if (pathParts.length < 3) {
+            alert("Please login first.");
+            return;
+        }
+        this.userId = pathParts[2];
+
         this.fileInput.addEventListener('change', (e) => this.loadFile(e));
         this.saveButton.addEventListener('click', () => this.saveMap());
     }
@@ -31,8 +40,7 @@ class CreatePageController {
 
     saveMap() {
         const map = this.graphDrawer.getMapData();
-        map.name = "123"
-        console.log(map);
+        map.name = document.getElementById("mapName").value;
         fetch('/protected/v1/save/map', {
             method: 'POST',
             headers: {
@@ -41,11 +49,12 @@ class CreatePageController {
             body: JSON.stringify(map)
         })
         .then(response => {
-            if (response.ok) {
-                alert(response);
-            } else {
-                alert("Failed to save the map.");
+            if (!response.ok) {
+                throw new Error("Error solving MTSP.");
             }
+            return response.json();
+        }).then(response => {
+             window.location.href = `/main/${this.userId}/${response.mapId}`;
         })
         .catch(error => {
             console.log("Save error:", error);

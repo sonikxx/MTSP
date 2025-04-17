@@ -26,13 +26,26 @@ export class MtspPageController {
         this.activePolling = null;
         this.pollingInterval = 300;
         this.pollingMaxRetries = 100;
+
+        this.name = null;
+        this.mapId = null;
     }
 
     init() {
+        const pathParts = window.location.pathname.split('/');
+        if (pathParts.length < 3) {
+            alert("Please login first.");
+            return;
+        }
+        this.mapId = pathParts[2];
+
         this.solveButton.addEventListener('click', (e) => this.solve(e));
         this.fileInput.addEventListener('change', (e) => this.loadFile(e));
         this.downloadResultButton.addEventListener('click', (e) => this.downloadResult(e));
         this.canselButton.addEventListener('click', (e) => this.cancelRequest(e));
+
+        this.loadMap();
+        this.loadAvailableMaps();
     }
 
     switchToSolvingMode() {
@@ -56,27 +69,32 @@ export class MtspPageController {
         this.downloadResultButton.disabled = false;
     }
 
-    loadFile(e) {
-        const file = e.target.files[0];
-        const reader = new FileReader();
-
-        reader.onload = (e) => {
-            const data = JSON.parse(e.target.result);
+    loadMap() {
+        fetch(`/protected/v1/get/map/${this.mapId}`)
+        .then(response => response.json())
+        .then(data => {
             this.graphDrawer.loadMap(data);
-            this.salesmanNumber = data.salesmanNumber;
-            this.algorithm = data.algorithm;
-            this.algorithmParams = data.algorithmParams;
-        };
-
-        reader.readAsText(file);
+            this.name = data.name;
+            console.log(this.name);
+        })
+        .catch(err => {
+            console.log(err);
+        });
     }
 
-    solve(e) {
-        // if (this.graphDrawer.points.length < 2) {
-        //     console.log("Please add at least two cities to solve the problem.");
-        //     return;
-        // }
+    loadAvailableMaps() {
+        fetch(`/protected/v1/get/maps`)
+       .then(response => response.json())
+       .then(data => {
+           console.log(data);
+       })
+        .catch(err => {
+            console.log(err);
+        })
+    }
 
+
+    solve(e) {
         this.switchToSolvingMode();
         fetch('/protected/v1/solve', {
             method: 'POST',
@@ -84,7 +102,7 @@ export class MtspPageController {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                mapId: 1,
+                mapId: this.mapId,
                 salesmanNumber: this.salesmanNumber,
                 algorithm: this.algorithm,
                 algorithmParams: this.algorithmParams
@@ -156,8 +174,6 @@ export class MtspPageController {
         const pollingKey = `polling-${requestId}`;
         let attempts = parseInt(localStorage.getItem(pollingKey), 10) || 0;
 
-        const self = this;
-
         const poll = async () => {
             try {
                 const response = await fetch(`/protected/v1/result/${requestId}`);
@@ -224,6 +240,8 @@ export class MtspPageController {
             alert("An error occurred while cancelling.");
         });
     }
-
-
 }
+
+
+const controller = new MtspPageController('fileInput', 'solveMTSPButton', 'map');
+controller.init();
