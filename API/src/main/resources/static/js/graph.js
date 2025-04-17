@@ -1,5 +1,5 @@
 export class GraphDrawer {
-    constructor(canvasId, isReadOnly = true, width = 500, height = 500) {
+    constructor(canvasId, isReadOnly = true, width = 700, height = 700) {
         this.canvas = document.getElementById(canvasId);
         this.ctx = this.canvas.getContext('2d');
 

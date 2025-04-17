@@ -154,7 +154,7 @@ canvas {
     padding: 12px 10px;
     border-radius: 4px;
     transition: background-color 0.3s ease;
-    width: calc(100% - 170px);
+    width: 48%;
     margin-right: 10px;
     height: 44px;
 }
