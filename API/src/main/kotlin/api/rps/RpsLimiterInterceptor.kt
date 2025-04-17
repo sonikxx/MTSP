@@ -46,12 +46,12 @@ class RpsLimiterInterceptor(
     }
 
     private fun getQuotaName(request: HttpServletRequest): String {
-        return jwtUtil.getClaims(request)?.get(ORGANIZATION_ID)?.toString() ?: UNKNOWN
+        return jwtUtil.getClaims(request)?.get(USER_ID)?.toString() ?: UNKNOWN
     }
 
     companion object {
         private val logger = KotlinLogging.logger {}
         private const val UNKNOWN = "unknown"
-        private const val ORGANIZATION_ID = "organizationId"
+        private const val USER_ID = "userId"
     }
 }

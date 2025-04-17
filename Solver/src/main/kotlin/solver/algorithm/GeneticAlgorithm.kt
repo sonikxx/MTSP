@@ -81,27 +81,83 @@ class GeneticAlgorithm : MtspAlgorithm() {
         return survivors + offspring
     }
 
+
     private fun crossover(
         parent1: List<List<Point>>,
         parent2: List<List<Point>>
     ): List<List<Point>> {
-        val flat1 = parent1.flatten().toMutableList()
-        val flat2 = parent2.flatten().toSet()
-        val result = mutableListOf<List<Point>>()
-        val portionSize = flat1.size / parent1.size
+        // Flatten the parents
+        val flat1 = parent1.flatten()
+        val flat2 = parent2.flatten()
+        val size = flat1.size
 
-        for (i in 0 until parent1.size) {
-            val part = flat1.filter { it in flat2 }.drop(i * portionSize).take(portionSize)
-            result += part
+        val child = MutableList<Point?>(size) { null }
+
+        // Step 1: Select a random swath
+        val (start, end) = Pair((0 until size).random(), (0 until size).random()).let {
+            if (it.first < it.second) it else it.second to it.first
         }
+
+        // Step 2: Copy the swath from flat1 to the child
+        for (i in start..end) {
+            child[i] = flat1[i]
+        }
+
+        // Step 3: Fill remaining positions with flat2's elements
+        var currentIndex = (end + 1) % size
+        flat2.forEach { point ->
+            if (point !in child) {
+                child[currentIndex] = point
+                currentIndex = (currentIndex + 1) % size
+            }
+        }
+
+        val result = mutableListOf<List<Point>>()
+        val portionSize = size / parent1.size
+        for (i in parent1.indices) {
+            val part = child.drop(i * portionSize).take(portionSize).map { it!! }
+            result.add(part)
+        }
+
         return result
     }
 
     private fun mutate(solution: List<List<Point>>, rate: Double): List<List<Point>> {
-        return solution.map { route ->
-            if (Random.nextDouble() < rate) route.shuffled() else route
+        if (Random.nextDouble() >= rate) return solution
+
+        val result = solution.map { it.toMutableList() }.toMutableList()
+
+        when ((1..3).random()) {
+            1 -> {
+                val index = result.indices.random()
+                result[index] = result[index].shuffled().toMutableList()
+            }
+            2 -> {
+                val fromIndex = result.indices.random()
+                val toIndex = result.indices.random()
+                if (fromIndex != toIndex && result[fromIndex].isNotEmpty()) {
+                    val point = result[fromIndex].removeAt(result[fromIndex].indices.random())
+                    result[toIndex].add(point)
+                }
+            }
+            3 -> {
+                if (result.size >= 2) {
+                    val fromIndex = result.indices.random()
+                    val toIndex = result.indices.random()
+                    if (fromIndex != toIndex && result[fromIndex].isNotEmpty() && result[toIndex].isNotEmpty()) {
+                        val fromPointIndex = result[fromIndex].indices.random()
+                        val toPointIndex = result[toIndex].indices.random()
+                        val temp = result[fromIndex][fromPointIndex]
+                        result[fromIndex][fromPointIndex] = result[toIndex][toPointIndex]
+                        result[toIndex][toPointIndex] = temp
+                    }
+                }
+            }
         }
+
+        return result
     }
+
 
     companion object {
         private val logger = KotlinLogging.logger {}
