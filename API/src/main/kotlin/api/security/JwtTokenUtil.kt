@@ -14,11 +14,12 @@ class JwtTokenUtil(
 ) {
     private val key = Keys.hmacShaKeyFor(jwtProperties.secretKey.toByteArray())
 
-    fun generateToken(userId: Long): String {
+    fun generateToken(userId: Long, username: String): String {
         return Jwts.builder()
             .claims(
                 mutableMapOf(
                     USER_ID to userId,
+                    USER_NAME to username,
                 )
             )
             .issuedAt(Date())
@@ -56,5 +57,6 @@ class JwtTokenUtil(
 
     companion object {
         private const val USER_ID = "userId"
+        private const val USER_NAME = "userName"
     }
 }

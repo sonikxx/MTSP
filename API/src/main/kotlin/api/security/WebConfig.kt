@@ -13,7 +13,7 @@ class WebConfig(
 
     override fun addInterceptors(registry: InterceptorRegistry) {
         registry.addInterceptor(jwtInterceptor)
-            .addPathPatterns("/protected/**", "/organization/**", "/main/**")
+            .addPathPatterns("/protected/**", "/organization/**", "/main/**", "/create/**")
 
         registry.addInterceptor(rpsLimiterInterceptor)
             .addPathPatterns("/**")

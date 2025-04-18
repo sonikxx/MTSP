@@ -6,6 +6,8 @@ export class MtspPageController {
         this.solveButton = document.getElementById(solveButtonId);
         this.canselButton = document.getElementById('canselButton');
         this.downloadResultButton = document.getElementById('downloadResultButton');
+        this.salesmanNumberInput = document.getElementById('salesmanCount');
+        this.algorithmSelect = document.getElementById('tspAlgorithm');
 
         this.canvas = document.getElementById(canvasId);
         this.ctx = this.canvas.getContext('2d');
@@ -42,6 +44,9 @@ export class MtspPageController {
         this.downloadResultButton.addEventListener('click', (e) => this.downloadResult(e));
         this.canselButton.addEventListener('click', (e) => this.cancelRequest(e));
 
+        this.salesmanNumberInput.addEventListener('change', (e) => this.salesmanNumber = e.target.value);
+        this.algorithmSelect.addEventListener('change', (e) => this.algorithm = e.target.value);
+
         this.loadMap();
         this.loadAvailableMaps();
     }
@@ -64,11 +69,12 @@ export class MtspPageController {
     }
 
     loadMap() {
-        fetch(`/protected/v1/get/map/${this.mapId}`)
+        fetch(`/protected/v1/map/${this.mapId}`)
         .then(response => response.json())
         .then(data => {
             this.graphDrawer.loadMap(data);
             this.name = data.name;
+            document.getElementById('userName').textContent = data.ownerName;
             console.log(this.name);
         })
         .catch(err => {
@@ -77,7 +83,7 @@ export class MtspPageController {
     }
 
     loadAvailableMaps() {
-        fetch(`/protected/v1/get/maps`)
+        fetch(`/protected/v1/maps`)
        .then(response => response.json())
        .then(data => {
            console.log(data);
@@ -87,8 +93,24 @@ export class MtspPageController {
         })
     }
 
+    validateUserInputs() {
+        if (this.salesmanNumber < 2) {
+            alert('Salesman number must be greater than 1');
+            return false;
+        }
+        if (this.graphDrawer.points.length < this.salesmanNumber) {
+            alert('Salesman number must be less than or equal to number of points');
+            return false;
+        }
+        return true;
+    }
+
 
     solve(e) {
+        if (!this.validateUserInputs()) {
+            return;
+        }
+
         this.switchToSolvingMode();
         fetch('/protected/v1/solve', {
             method: 'POST',

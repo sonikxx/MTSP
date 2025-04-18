@@ -6,14 +6,12 @@
     <title>MTSP Problem Solver</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap">
     <link rel="stylesheet" href="/css/main_style.css">
-<!-- Временно дублирую ../css/main_style.css чтобы запускать через сервер и просто файлом html -->
-    <link rel="stylesheet" href="../css/main_style.css">
 </head>
 <body>
 
 <header>
     <div class="user">
-        <p class="user-name">leiaparm</p>
+        <p class="user-name" id="userName">leiaparm</p>
     </div>
 </header>
 
@@ -22,7 +20,7 @@
         <div class="settings-container">
             <div class="input-field">
                 <label class="input-label" for="salesmanCount">Enter salesman count:</label>
-                <input type="number" id="salesmanCount" class="input-number" placeholder="" min="0">
+                <input type="number" id="salesmanCount" class="input-number" placeholder="" min="2" value="2">
             </div>
 
             <div class="algorithm-selector">
@@ -49,10 +47,6 @@
 <script type="module" src="/js/graph.js"></script>
 <script type="module" src="/js/script.js"></script>
 <script type="module" src="/js/mainController.js"></script>
-<!-- Временно дублирую ../css/main_style.css чтобы запускать через сервер и просто файлом html -->
-<script type="module" src="../js/graph.js"></script>
-<script type="module" src="../js/script.js"></script>
-<script type="module" src="../js/mainController.js"></script>
 
 </body>
 </html>

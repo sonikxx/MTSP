@@ -10,18 +10,9 @@ class CreatePageController {
 
         const isReadOnlyGraph = !document.location.href.includes('main');
         this.graphDrawer = new GraphDrawer(canvasId, isReadOnlyGraph);
-
-        this.userId = null;
     }
 
     init() {
-        const pathParts = window.location.pathname.split('/');
-        if (pathParts.length < 3) {
-            alert("Please login first.");
-            return;
-        }
-        this.userId = pathParts[2];
-
         this.fileInput.addEventListener('change', (e) => this.loadFile(e));
         this.saveButton.addEventListener('click', () => this.saveMap());
     }
@@ -54,7 +45,7 @@ class CreatePageController {
             }
             return response.json();
         }).then(response => {
-             window.location.href = `/main/${this.userId}/${response.mapId}`;
+             window.location.href = `/main/${response.mapId}`;
         })
         .catch(error => {
             console.log("Save error:", error);

@@ -16,11 +16,11 @@ import org.springframework.web.bind.annotation.RequestAttribute
 data class IdResponse(val mapId: Long)
 
 @RestController
-@RequestMapping("/protected")
+@RequestMapping("/protected/v1")
 class MapController(
     private val mtspMapRepository: MtspMapRepository
 ) {
-    @PostMapping("/v1/save/map")
+    @PostMapping("save/map")
     fun save(
         @RequestBody request: MtspApiMap,
         @RequestAttribute(name = "userId") userId: Long,
@@ -48,10 +48,11 @@ class MapController(
         return IdResponse(saved.id)
     }
 
-    @GetMapping("/v1/get/map/{mapId}")
+    @GetMapping("map/{mapId}")
     fun getMap(
         @PathVariable mapId: Long,
         @RequestAttribute(name = "userId") userId: Long,
+        @RequestAttribute(name = "userName") username: String,
     ): ResponseEntity<MtspApiMap> {
         val map = mtspMapRepository.findByIdAndUserId(mapId, userId)
             ?: return ResponseEntity.notFound().build()
@@ -67,12 +68,13 @@ class MapController(
                 name = map.name,
                 cities = map.points,
                 distances = distances.map { it.toList() },
-                isPublic = map.isPublic
+                isPublic = map.isPublic,
+                ownerName = username
             )
         )
     }
 
-    @GetMapping("/v1/get/maps")
+    @GetMapping("maps")
     fun getAvailableMaps(
         @RequestAttribute(name = "userId") userId: Long
     ): ResponseEntity<List<MtspApiMap>> {

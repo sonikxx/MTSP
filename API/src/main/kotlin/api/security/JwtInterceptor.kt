@@ -20,10 +20,12 @@ class JwtInterceptor(
         }
 
         request.setAttribute(USER_ID, claims[USER_ID].toString().toLong())
+        request.setAttribute(USER_NAME, claims[USER_NAME].toString())
         return true
     }
 
     companion object {
         private const val USER_ID = "userId"
+        private const val USER_NAME = "userName"
     }
 }

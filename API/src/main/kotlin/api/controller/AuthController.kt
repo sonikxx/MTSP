@@ -33,7 +33,7 @@ class AuthController(
             password = request.password
         ) ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials")
 
-        val token = jwtTokenUtil.generateToken(user.id)
+        val token = jwtTokenUtil.generateToken(user.id, user.email)
         val cookie = Cookie(jwtProperties.cookie.name, token).apply {
             path = jwtProperties.cookie.path
             isHttpOnly = jwtProperties.cookie.isHttpOnly
@@ -43,7 +43,7 @@ class AuthController(
         response.addCookie(cookie)
 
         return ResponseEntity.status(HttpStatus.FOUND)
-            .header(HttpHeaders.LOCATION, "/create/${user.id}")
+            .header(HttpHeaders.LOCATION, "/create")
             .build()
     }
 
