@@ -16,16 +16,18 @@ class GeneticAlgorithm : MtspAlgorithm() {
     override val name: String = "genetic"
 
     override fun solve(
-        points: List<Point>,
+        inputPoints: List<Point>,
         distances: Array<Array<Double>>,
         numSalesmen: Int
     ): Flow<Pair<SolutionStatus, AlgorithmSolution>> = flow {
         logger.info { "Start genetic algorithm" }
+        if (numSalesmen < 2 || inputPoints.size <= numSalesmen) return@flow
 
-        val populationSize = 1000
-        val generations = 5000
-        val mutationRate = 0.1
-        val updateInterval = 50
+        val points = inputPoints.drop(1)
+        val populationSize = 500
+        val generations = 4000
+        val mutationRate = 0.05
+        val updateInterval = 25
 
         var population = generateInitialPopulation(populationSize, points, numSalesmen)
         var best = population.minByOrNull { calculateTotalDistance(distances, it) }!!
@@ -107,16 +109,22 @@ class GeneticAlgorithm : MtspAlgorithm() {
         var currentIndex = (end + 1) % size
         flat2.forEach { point ->
             if (point !in child) {
+                // Find next empty slot
+                while (child[currentIndex] != null) {
+                    currentIndex = (currentIndex + 1) % size
+                }
                 child[currentIndex] = point
-                currentIndex = (currentIndex + 1) % size
             }
         }
 
+        // Step 4: Regroup the child to match parent1's structure
         val result = mutableListOf<List<Point>>()
-        val portionSize = size / parent1.size
-        for (i in parent1.indices) {
-            val part = child.drop(i * portionSize).take(portionSize).map { it!! }
-            result.add(part)
+        var currentIndexInChild = 0
+        parent1.forEach { part ->
+            val groupSize = part.size
+            val partInChild = child.subList(currentIndexInChild, currentIndexInChild + groupSize).map { it!! }
+            result.add(partInChild)
+            currentIndexInChild += groupSize
         }
 
         return result
@@ -135,7 +143,7 @@ class GeneticAlgorithm : MtspAlgorithm() {
             2 -> {
                 val fromIndex = result.indices.random()
                 val toIndex = result.indices.random()
-                if (fromIndex != toIndex && result[fromIndex].isNotEmpty()) {
+                if (fromIndex != toIndex && result[fromIndex].size > 1) {
                     val point = result[fromIndex].removeAt(result[fromIndex].indices.random())
                     result[toIndex].add(point)
                 }

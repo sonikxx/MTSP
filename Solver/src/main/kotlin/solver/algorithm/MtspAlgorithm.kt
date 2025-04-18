@@ -11,16 +11,16 @@ abstract class MtspAlgorithm {
     abstract val name: String
 
     abstract fun solve(
-        points: List<Point>,
+        inputPoints: List<Point>,
         distances: Array<Array<Double>>,
         numSalesmen: Int
     ): Flow<Pair<SolutionStatus, AlgorithmSolution>>
 
-    protected fun distance(distances: Array<Array<Double>>, a: Point, b: Point): Double =
-        distances[a.id][b.id]
+    private fun distance(distances: Array<Array<Double>>, aId: Int, bId: Int): Double =
+        distances[aId][bId]
 
     protected fun calculateRouteDistance(distances: Array<Array<Double>>, route: List<Point>): Double =
-        route.zipWithNext().sumOf { (a, b) -> distance(distances, a, b) }
+        route.zipWithNext().sumOf { (a, b) -> distance(distances, a.id, b.id) } + distance(distances, 0, route.first().id) + distance(distances, 0, route.last().id)
 
     protected fun calculateTotalDistance(distances: Array<Array<Double>>, routes: List<List<Point>>): Double =
         routes.sumOf { calculateRouteDistance(distances, it) }

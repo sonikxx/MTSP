@@ -48,7 +48,7 @@ class MtspSolverService(
 
         val points = request.map.cities.map{ city ->
             Point(namesToId[city]!!)
-        }.shuffled()
+        }
 
         val startTime = Instant.now()
 

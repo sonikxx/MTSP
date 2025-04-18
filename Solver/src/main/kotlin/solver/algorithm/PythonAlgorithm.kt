@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import mu.KotlinLogging
 import org.springframework.stereotype.Service
 import solver.dto.AlgorithmSolution
 import solver.dto.Point
@@ -17,7 +18,7 @@ class PythonAlgorithm: MtspAlgorithm() {
     private val objectMapper = jacksonObjectMapper()
 
     override fun solve(
-        points: List<Point>,
+        inputPoints: List<Point>,
         distances: Array<Array<Double>>,
         numSalesmen: Int
     ): Flow<Pair<SolutionStatus, AlgorithmSolution>> = flow {
@@ -65,6 +66,7 @@ class PythonAlgorithm: MtspAlgorithm() {
                     totalDistance = solutionNode["totalDistance"].asDouble()
                 )
 
+                logger.info { "Emitting solution: $solution" }
 
 
                 emit(status to solution)
@@ -74,4 +76,8 @@ class PythonAlgorithm: MtspAlgorithm() {
         process.waitFor()
     }
 
+
+    companion object {
+        private val logger = KotlinLogging.logger {}
+    }
 }

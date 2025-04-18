@@ -13,10 +13,10 @@ import solver.dto.SolutionStatus
 class BruteForceAlgorithm : MtspAlgorithm() {
     override val name: String = "bruteForce"
 
-    override fun solve(points: List<Point>, distances: Array<Array<Double>>, numSalesmen: Int) : Flow<Pair<SolutionStatus, AlgorithmSolution>> = flow {
+    override fun solve(inputPoints: List<Point>, distances: Array<Array<Double>>, numSalesmen: Int) : Flow<Pair<SolutionStatus, AlgorithmSolution>> = flow {
         logger.info { "Start solving with $name algorithm" }
-        if (numSalesmen <= 0 || points.isEmpty()) return@flow
-
+        if (numSalesmen < 2 || inputPoints.size <= numSalesmen) return@flow
+        val points = inputPoints.drop(1)
         val allPermutations = points.permutations()
         val bestResult = AlgorithmSolution(emptyList(), numSalesmen, Double.MAX_VALUE)
         for (perm in allPermutations) {

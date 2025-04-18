@@ -16,6 +16,7 @@ export class GraphDrawer {
             '#32CD32',
             '#FF69B4'
         ];
+        this.mainColor = '#c1372e';
 
         this.canvas.style.cursor = 'not-allowed';
         if (isReadOnly === true) {
@@ -117,16 +118,42 @@ export class GraphDrawer {
         this.drawPoints();
     }
 
+    //function to draw star with N spikes
+    //centered on a circle of radius R, centered on (cX,cY)
+    drawStar(R, cX, cY, N) {
+        this.ctx.beginPath();
+        this.ctx.fillStyle = this.mainColor;
+        this.ctx.moveTo(cX + R, cY);
+
+        for (let i = 1; i <= N * 2; i++) {
+            const theta = i * Math.PI / N;
+            const radius = (i % 2 === 0) ? R : R / 2;
+            const x = cX + radius * Math.cos(theta);
+            const y = cY + radius * Math.sin(theta);
+            this.ctx.lineTo(x, y);
+        }
+
+        this.ctx.closePath();
+        this.ctx.fill();
+        this.ctx.stroke();
+    }
+
+
     drawPoints() {
         this.drawGrid();
 
         this.drawRoutes();
 
-        this.points.forEach(point => {
-            this.ctx.beginPath();
-            this.ctx.arc(point.x, point.y, 5, 0, Math.PI * 2);
-            this.ctx.fillStyle = "#60a5fa";
-            this.ctx.fill();
+        this.points.forEach((point, i) => {
+
+            if (i === 0) {
+                this.drawStar(10, point.x, point.y, 5);
+            } else {
+                this.ctx.beginPath();
+                this.ctx.arc(point.x, point.y, 5, 0, Math.PI * 2);
+                this.ctx.fillStyle = "#60a5fa";
+                this.ctx.fill();
+            }
 
 
             const text = point.name;
@@ -145,12 +172,14 @@ export class GraphDrawer {
     }
 
     drawRoutes() {
+        const depot = this.points[0];
         this.routes.forEach((route, index) => {
+            const fullRoute = [depot, ...route, depot];
             this.ctx.strokeStyle = this.colors[index % this.colors.length];
             this.ctx.lineWidth = 2;
 
             this.ctx.beginPath();
-            route.forEach((name, i) => {
+            fullRoute.forEach((name, i) => {
                 const point = this.points.find(p => p.name === name.name);
                 if (point) {
                     if (i === 0) {
@@ -172,6 +201,12 @@ export class GraphDrawer {
     }
 
     clearRoutes() {
+        this.routes = [];
+        this.drawPoints();
+    }
+
+    clearAll() {
+        this.points = [];
         this.routes = [];
         this.drawPoints();
     }

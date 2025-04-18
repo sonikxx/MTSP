@@ -272,6 +272,8 @@ class SA:
         Returns:
 
         """
+
+        cur_best_result = INF
         while self.T > self.T_end:
             # 每个温度下最优解都要赋值
             self.per_iter_solution = solution
@@ -307,6 +309,9 @@ class SA:
 
             per_iter_solu_path, per_iter_solu_dis = get_distance_func(self.per_iter_solution)
             best_solu_path, best_solu_dis = get_distance_func(self.best_solution)
+            if cur_best_result > sum(best_solu_dis):
+                cur_best_result = sum(best_solu_dis)
+                self.print_result(best_solu_path, cur_best_result)
             self.T_list.append(self.T)
             self.T = self.T * self.alpha
 
@@ -321,9 +326,9 @@ class SA:
         self.sa_process_iterator(self.per_iter_solution, self.get_check_vertex_distance)
 
 
-    def print_result(self, cities, distance):
+    def print_result(self, cities, distance, status="INTERMEDIATE"):
         final_solution = {
-            "status": "SOLVED",
+            "status": status,
             "solution": {
                 "cities": cities,
                 "numSalesmen": self.salesman_num,
@@ -339,7 +344,7 @@ class SA:
 
         """
         best_path, best_dist_list = self.get_check_vertex_distance(self.best_solution)
-        self.print_result(best_path, sum(best_dist_list))
+        self.print_result(best_path, sum(best_dist_list), status="SOLVED")
 #         print("Total distance: {}".format(sum(best_dist_list)))
 #         print("Best solution path: {}".format(best_path))
 
