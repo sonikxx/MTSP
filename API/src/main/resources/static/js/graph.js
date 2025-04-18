@@ -16,7 +16,7 @@ export class GraphDrawer {
             '#32CD32',
             '#FF69B4'
         ];
-        this.mainColor = '#c1372e';
+        this.mainColor = '#fd6535';
 
         this.canvas.style.cursor = 'not-allowed';
         if (isReadOnly === true) {

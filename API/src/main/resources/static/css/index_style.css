@@ -48,6 +48,8 @@ header p {
     font-size: 18px;
     margin-top: 20px;
     transition: background-color 0.3s ease;
+    width: 80px;
+    margin-right: 20px;
 }
 
 .cta-button:hover {

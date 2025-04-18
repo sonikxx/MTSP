@@ -55,15 +55,14 @@ canvas {
 }
 
 .settings {
-    display: flex;
-    align-content: flex-start;
     margin-left: 30px;
+}
+
+.settings-container{
+    display: flex;
     flex-direction: column;
 }
 
-.input-field {
-    margin-bottom: 40px;
-}
 
 .input-label, .algorithm-selector-label {
     display: block;
@@ -72,8 +71,12 @@ canvas {
     font-size: 16px;
 }
 
+.input-field, .algorithm-selector {
+    margin-left: 20px;
+}
+
 .input-number, .select-algorithm {
-    width: calc(100% - 50px);
+    width: calc(100% - 72px);
     padding: 8px;
     border: 1px solid white;
     border-radius: 5px;
@@ -83,9 +86,6 @@ canvas {
     height: 44px;
 }
 
-.algorithm-selector {
-    margin: 20px 0;
-}
 
 .custom-selector {
     height: 48px;
@@ -98,7 +98,7 @@ canvas {
     content: "";
     pointer-events: none;
     width: 1px;
-    right: 60px;
+    right: 81px;
 }
 
 .custom-selector::before {
@@ -145,6 +145,7 @@ canvas {
     transition: background-color 0.3s ease;
     width: 140px;
     height: 44px;
+    margin: 20px;
 }
 
 #canselButton:hover {

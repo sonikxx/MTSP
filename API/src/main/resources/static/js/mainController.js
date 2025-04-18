@@ -17,8 +17,8 @@ export class MtspPageController {
 
         this.requestId = null;
 
-        this.salesmanNumber = 3;
-        this.algorithm = 'bruteForce';
+        this.salesmanNumber = this.salesmanNumberInput.value;
+        this.algorithm = this.algorithmSelect.value;
         this.algorithmParams = {
             maxIterations: 1000,
         }
@@ -63,7 +63,7 @@ export class MtspPageController {
 
     switchToReadyMode() {
         this.solveButton.disabled = false;
-        this.solveButton.innerText = 'Solve MTSP';
+        this.solveButton.innerText = 'Solve';
 
         this.downloadResultButton.disabled = false;
     }
@@ -78,8 +78,8 @@ export class MtspPageController {
             console.log(this.name);
         })
         .catch(err => {
-            alert("Couldn't load map.");
-            document.location.href = '/';
+            //alert("Couldn't load map.");
+            //document.location.href = '/';
         });
     }
 
@@ -249,10 +249,12 @@ export class MtspPageController {
                 this.switchToReadyMode();
                 alert("Request cancelled.");
             } else {
+                this.switchToReadyMode();
                 alert("Failed to cancel the request.");
             }
         })
         .catch(error => {
+            this.switchToReadyMode();
             console.log("Cancel error:", error);
             alert("An error occurred while cancelling.");
         });
