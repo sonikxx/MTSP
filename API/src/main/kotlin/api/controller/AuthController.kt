@@ -2,6 +2,7 @@ package api.controller
 
 import api.config.JwtProperties
 import api.dto.LoginApiRequest
+import api.dto.RegisterApiRequest
 import api.security.JwtTokenUtil
 import api.service.AuthService
 import jakarta.servlet.http.Cookie
@@ -22,6 +23,32 @@ class AuthController(
     private val jwtProperties: JwtProperties,
     private val authService: AuthService
 ) {
+
+    @PostMapping("/register")
+    fun register(
+        @RequestBody request: RegisterApiRequest,
+        response: HttpServletResponse
+    ): ResponseEntity<String> {
+        val user = authService.register(
+            firstName = request.firstName,
+            lastName = request.lastName,
+            email = request.email,
+            password = request.password
+        ) ?: return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User already exists")
+
+        val token = jwtTokenUtil.generateToken(user.id, user.email)
+        val cookie = Cookie(jwtProperties.cookie.name, token).apply {
+            path = jwtProperties.cookie.path
+            isHttpOnly = jwtProperties.cookie.isHttpOnly
+            secure = jwtProperties.cookie.secure
+            maxAge = jwtProperties.cookie.maxAge
+        }
+        response.addCookie(cookie)
+
+        return ResponseEntity.status(HttpStatus.FOUND)
+            .header(HttpHeaders.LOCATION, "/create")
+            .build()
+    }
 
     @PostMapping("/login")
     fun login(

@@ -19,6 +19,13 @@ class PageController(
         return ResponseEntity.ok().contentType(MediaType.TEXT_HTML).body(file)
     }
 
+    @GetMapping("register")
+    fun register(): ResponseEntity<Resource> {
+        val file = pageService.register()
+
+        return ResponseEntity.ok().contentType(MediaType.TEXT_HTML).body(file)
+    }
+
     @GetMapping("login")
     fun login(): ResponseEntity<Resource> {
         val file = pageService.login()

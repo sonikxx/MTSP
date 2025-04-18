@@ -13,8 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.bind.annotation.RequestAttribute
 
-data class IdResponse(val mapId: Long)
-
 @RestController
 @RequestMapping("/protected/v1")
 class MapController(
@@ -24,7 +22,7 @@ class MapController(
     fun save(
         @RequestBody request: MtspApiMap,
         @RequestAttribute(name = "userId") userId: Long,
-    ): IdResponse {
+    ): ResponseEntity<Map<String, Long>> {
          val map = MtspMap(
             userId = userId,
             name = request.name,
@@ -45,7 +43,11 @@ class MapController(
             }
         }
         val saved = mtspMapRepository.save(map)
-        return IdResponse(saved.id)
+        return ResponseEntity.ok(
+            mapOf(
+                "mapId" to saved.id
+            )
+        )
     }
 
     @GetMapping("map/{mapId}")
@@ -91,5 +93,18 @@ class MapController(
                 )
             }
         )
+    }
+
+    @GetMapping("info")
+    fun getInfo(
+        @RequestAttribute(name = "userId") userId: Long,
+        @RequestAttribute(name = "userName") username: String
+    ): ResponseEntity<Map<String, String>> {
+        return ResponseEntity.ok(
+            mapOf(
+                "userName" to username,
+                "userId" to userId.toString()
+                )
+            )
     }
 }

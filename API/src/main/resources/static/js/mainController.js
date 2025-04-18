@@ -78,7 +78,8 @@ export class MtspPageController {
             console.log(this.name);
         })
         .catch(err => {
-            console.log(err);
+            alert("Couldn't load map.");
+            document.location.href = '/';
         });
     }
 
@@ -154,7 +155,7 @@ export class MtspPageController {
             });
     }
 
-    getResult(data) {
+    getResult() {
         return {
             result : this.result,
             salesmanNumber : this.salesmanNumber,

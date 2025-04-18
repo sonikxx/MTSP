@@ -12,6 +12,11 @@ class PageService {
             logger.info { "request index page" }
         }
 
+    fun register(): ClassPathResource =
+        ClassPathResource("static/pages/register.html").apply {
+            logger.info { "request register page" }
+        }
+
     fun login(): ClassPathResource =
         ClassPathResource("static/pages/login.html").apply {
             logger.info { "request login page" }
