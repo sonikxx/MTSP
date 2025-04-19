@@ -6,12 +6,12 @@ import api.dto.MtspMap
 import api.repository.MtspMapRepository
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestAttribute
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import org.springframework.web.bind.annotation.RequestAttribute
 
 @RestController
 @RequestMapping("/protected/v1")
@@ -21,13 +21,13 @@ class MapController(
     @PostMapping("save/map")
     fun save(
         @RequestBody request: MtspApiMap,
-        @RequestAttribute(name = "userId") userId: Long,
+        @RequestAttribute(name = "userId") userId: Long
     ): ResponseEntity<Map<String, Long>> {
-         val map = MtspMap(
+        val map = MtspMap(
             userId = userId,
             name = request.name,
             isPublic = request.isPublic,
-            points = request.cities,
+            points = request.cities
         )
 
         request.distances.forEachIndexed { fromNode, edge ->
@@ -54,7 +54,7 @@ class MapController(
     fun getMap(
         @PathVariable mapId: Long,
         @RequestAttribute(name = "userId") userId: Long,
-        @RequestAttribute(name = "userName") username: String,
+        @RequestAttribute(name = "userName") username: String
     ): ResponseEntity<MtspApiMap> {
         val map = mtspMapRepository.findByIdAndUserId(mapId, userId)
             ?: return ResponseEntity.notFound().build()
@@ -104,7 +104,7 @@ class MapController(
             mapOf(
                 "userName" to username,
                 "userId" to userId.toString()
-                )
             )
+        )
     }
 }

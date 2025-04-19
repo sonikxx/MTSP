@@ -19,7 +19,7 @@ class JwtTokenUtil(
             .claims(
                 mutableMapOf(
                     USER_ID to userId,
-                    USER_NAME to username,
+                    USER_NAME to username
                 )
             )
             .issuedAt(Date())

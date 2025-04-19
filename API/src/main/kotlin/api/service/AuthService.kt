@@ -2,18 +2,19 @@ package api.service
 
 import api.dto.User
 import api.repository.UserRepository
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import java.time.Instant
 
 @Service
 class AuthService(
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val passwordEncoder: PasswordEncoder
 ) {
 
     fun login(email: String, password: String): User? {
         val user = userRepository.findByEmail(email)
-        // TODO: hash password after test all application logic
-        return if (user != null && user.passwordHash == password) user else null
+        return if (user != null && passwordEncoder.matches(password, user.passwordHash)) user else null
     }
 
     fun register(firstName: String, lastName: String, email: String, password: String): User? {
@@ -23,7 +24,7 @@ class AuthService(
             this.firstName = firstName
             this.lastName = lastName
             this.email = email
-            this.passwordHash = password // TODO: replace with hashed password later
+            this.passwordHash = passwordEncoder.encode(password)
             this.lastActivity = Instant.now()
         }
 

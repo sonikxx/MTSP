@@ -40,10 +40,13 @@ dependencies {
     implementation("org.springframework.kafka:spring-kafka")
     // kafka json parser
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    // password hashing
+    implementation("org.springframework.security:spring-security-crypto")
+    // html template engine
+    // implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
     // other start
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-webflux")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("io.grpc:grpc-services")
     implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
