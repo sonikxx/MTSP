@@ -180,3 +180,54 @@ canvas {
     font-size: 14px;
     color: white;
 }
+
+.sidebar-container {
+    width: 430px;
+    height: 80vh;
+    box-sizing: border-box;
+    margin-left: 40px;
+    margin-top: -30px;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar{
+    box-sizing: border-box;
+    overflow-y: auto;
+    border: 1px solid white;
+    border-radius: 5px;
+    padding: 20px 20px 0 20px;
+    background-color: #222;
+}
+
+.card {
+    display: block;
+    background-color: #fff;
+    margin-bottom: 20px;
+    padding: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    border-radius: 4px;
+    color: #333;
+    text-decoration: none;
+}
+
+.card-title {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.sidebar h2 {
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+.card-author, .card-data {
+    text-align: left;
+    padding-left: 10px;
+}
+
+.card:hover {
+    background-color: #2563eb;
+    transition: background-color 0.3s ease;
+    color: white;
+}
