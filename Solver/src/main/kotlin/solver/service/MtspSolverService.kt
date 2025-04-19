@@ -1,7 +1,5 @@
 package solver.service
 
-import io.grpc.Status
-import io.grpc.StatusException
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.delay
@@ -38,12 +36,12 @@ class MtspSolverService(
         }
         if (namesToId.size != request.map.cities.size) {
             logger.error { "${request.id}: Request contains duplicate city names!" }
-            throw StatusException(Status.INVALID_ARGUMENT.withDescription("Duplicate city names are not allowed"))
+            throw IllegalArgumentException("Duplicate city names are not allowed")
         }
 
         if (request.salesmanNumber <= 0 || request.salesmanNumber > request.map.cities.size) {
             logger.error { "${request.id}: Invalid number of salesmen: ${request.salesmanNumber}" }
-            throw StatusException(Status.INVALID_ARGUMENT.withDescription("Number of salesmen must be positive and less than the number of cities"))
+            throw IllegalArgumentException("Number of salesmen must be positive and less than the number of cities")
         }
 
         val points = request.map.cities.map{ city ->

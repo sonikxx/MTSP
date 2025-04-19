@@ -1,11 +1,8 @@
-import com.google.protobuf.gradle.id
-
 plugins {
 	kotlin("jvm") version "1.9.25"
 	kotlin("plugin.spring") version "1.9.25"
 	id("org.springframework.boot") version "3.4.3"
 	id("io.spring.dependency-management") version "1.1.7"
-	id("com.google.protobuf") version "0.9.4"
 }
 
 group = "com.example"
@@ -21,8 +18,6 @@ repositories {
 	mavenCentral()
 }
 
-extra["springGrpcVersion"] = "0.3.0"
-
 dependencies {
 	// kafka start
 	implementation("org.springframework.kafka:spring-kafka")
@@ -33,28 +28,18 @@ dependencies {
 	// database staff start
 	implementation("org.postgresql:postgresql")
 	// other
-	implementation("io.grpc:grpc-services")
-	implementation("io.grpc:grpc-kotlin-stub:1.4.1")
-	implementation("com.google.protobuf:protobuf-kotlin:3.25.3")
 	implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
-	implementation("org.springframework.grpc:spring-grpc-spring-boot-starter")
 	implementation("io.github.microutils:kotlin-logging-jvm:3.0.5")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("io.projectreactor:reactor-test")
 	testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
 	testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test")
-	testImplementation("org.springframework.grpc:spring-grpc-test")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
-dependencyManagement {
-	imports {
-		mavenBom("org.springframework.grpc:spring-grpc-dependencies:${property("springGrpcVersion")}")
-	}
-}
 
 kotlin {
 	compilerOptions {
@@ -62,37 +47,6 @@ kotlin {
 	}
 }
 
-protobuf {
-	protoc {
-		artifact = "com.google.protobuf:protoc"
-	}
-	plugins {
-		id("grpc") {
-			artifact = "io.grpc:protoc-gen-grpc-java"
-		}
-		id("grpckt") {
-			artifact = "io.grpc:protoc-gen-grpc-kotlin:1.4.1:jdk8@jar"
-		}
-	}
-	generateProtoTasks {
-		all().forEach {
-			it.plugins {
-				id("grpc") {
-					option("jakarta_omit")
-					option("@generated=omit")
-				}
-				id("grpckt")
-			}
-		}
-	}
-	sourceSets {
-		main {
-			proto {
-				srcDir("../proto")  // Указываем путь к общим .proto файлам в корневой папке (предполагаем, что папка с .proto файлами расположена в корне репозитория)
-			}
-		}
-	}
-}
 
 tasks.withType<Test> {
 	useJUnitPlatform()
