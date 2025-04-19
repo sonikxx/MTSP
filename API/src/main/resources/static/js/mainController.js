@@ -74,12 +74,32 @@ export class MtspPageController {
             this.graphDrawer.loadMap(data);
             this.name = data.name;
             document.getElementById('userName').textContent = data.ownerName;
+            this.loadBestSolution();
             console.log(this.name);
         })
         .catch(err => {
             alert("Couldn't load map.");
             document.location.href = '/create';
         });
+    }
+
+    loadBestSolution() {
+        // Fetch the best solution for the map if available
+        fetch(`/protected/v1/best/${this.mapId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data) {
+                    console.log("Best solution found:", data);
+                    this.graphDrawer.setRoutes(data.routes);
+                    this.result = data;
+                    // Handle the solution (for example, draw the solution on the graph)
+                } else {
+                    console.log("No solution found.");
+                }
+            })
+            .catch(err => {
+                alert("Couldn't load best solution:" + err);
+            });
     }
 
     validateUserInputs() {

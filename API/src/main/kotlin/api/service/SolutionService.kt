@@ -15,4 +15,8 @@ class SolutionService(
             requestId,
             SolutionStatus.SOLVED
         ) ?: solutionRepository.findFirstByUserIdAndRequestIdOrderByTotalCostAsc(userId, requestId)
+
+    fun getBestSolutionForMap(mapId: Long, userId: Long): Solution?  {
+        return solutionRepository.findBestSolutionForMapById(mapId, userId)
+    }
 }
