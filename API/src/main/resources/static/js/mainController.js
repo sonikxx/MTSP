@@ -247,14 +247,15 @@ export class MtspPageController {
             if (response.ok) {
                 this.stopPolling(this.requestId);
                 this.switchToReadyMode();
-                alert("Request cancelled.");
             } else {
+                this.stopPolling(this.requestId);
                 this.switchToReadyMode();
                 alert("Failed to cancel the request.");
             }
         })
         .catch(error => {
             this.switchToReadyMode();
+            this.stopPolling(this.requestId);
             console.log("Cancel error:", error);
             alert("An error occurred while cancelling.");
         });
