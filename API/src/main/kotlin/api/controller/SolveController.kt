@@ -67,7 +67,7 @@ class SolveController(
     ): MtspApiResponse {
         logger.info { "Received request!" }
 
-        val solution = solutionService.getBestSolutionForMap(mapId, userId)
+        val (solution, algorithm) = solutionService.getBestSolutionForMap(mapId, userId)
         if (solution == null) {
             logger.info { "Solution not found — returning QUEUED with empty routes." }
             return MtspApiResponse(status = "QUEUED")
@@ -79,7 +79,8 @@ class SolveController(
             status = solution.status.name,
             routes = routes,
             totalCost = solution.totalCost ?: 0.0,
-            totalTime = (solution.completedAt ?: Instant.now()).toEpochMilli().minus(solution.createdAt.toEpochMilli())
+            totalTime = (solution.completedAt ?: Instant.now()).toEpochMilli().minus(solution.createdAt.toEpochMilli()),
+            algorithm = algorithm
         )
     }
 

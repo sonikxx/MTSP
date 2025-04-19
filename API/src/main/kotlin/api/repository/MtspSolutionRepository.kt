@@ -38,4 +38,10 @@ interface MtspSolutionRepository : JpaRepository<Solution, Long> {
         @Param("mapId") mapId: Long,
         @Param("userId") userId: Long
     ): Solution?
+
+    @Query(
+        value = "SELECT r.algorithm FROM mtsp_requests r WHERE r.id = :requestId",
+        nativeQuery = true
+    )
+    fun findAlgorithmByRequestId(@Param("requestId") requestId: String): String?
 }

@@ -42,6 +42,32 @@
         <button id="canselButton">Stop</button>
         <button id="downloadResultButton">Download</button>
     </div>
+
+    <div class="info">
+        <div class="map-title">Map name: aboba</div>
+        <div class="map-author">Author: leiaparm</div>
+
+        <div id="bestResult">
+            <div class="section-title">----------------- Best result -----------------</div>
+            <div>Salesman count: <span id="bestSalesmanCount">-</span></div>
+            <div>Algorithm: <span id="bestAlgorithm">-</span></div>
+            <div>Total cost: <span id="bestTotalCost">-</span></div>
+            <div>Time: <span id="bestTime">-</span></div>
+        </div>
+
+        <div id="yourResult">
+            <div class="section-title">----------------- Your result -----------------</div>
+            <div>Salesman count: <span id="yourSalesmanCount"></span></div>
+            <div>Algorithm: <span id="yourAlgorithm"></span></div>
+            <div>Total cost: <span id="yourTotalCost"></span></div>
+            <div>Time: <span id="yourTime"></span></div>
+        </div>
+        <button class="return-button" onclick="document.location.href='/create'">
+            <span class="return-arrow">&#8592;</span>
+            <span>Choose map</span>
+        </button>
+    </div>
+
 </section>
 
 <script type="module" src="/js/graph.js"></script>

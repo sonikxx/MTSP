@@ -91,6 +91,12 @@ export class MtspPageController {
                 if (data) {
                     console.log("Best solution found:", data);
                     this.graphDrawer.setRoutes(data.routes);
+                    this.fillResultSection('best', {
+                        totalCost: data.totalCost,
+                        timeMs: data.totalTime,
+                        algorithm: data.algorithm,
+                        salesmanNumber: data.routes.length,
+                    });
                     this.result = data;
                     // Handle the solution (for example, draw the solution on the graph)
                 } else {
@@ -100,6 +106,13 @@ export class MtspPageController {
             .catch(err => {
                 alert("Couldn't load best solution:" + err);
             });
+    }
+
+    fillResultSection(prefix, { salesmanNumber, algorithm, totalCost, timeMs }) {
+        document.getElementById(`${prefix}SalesmanCount`).textContent = salesmanNumber;
+        document.getElementById(`${prefix}Algorithm`).textContent = algorithm;
+        document.getElementById(`${prefix}TotalCost`).textContent = totalCost;
+        document.getElementById(`${prefix}Time`).textContent = `${timeMs}ms`;
     }
 
     validateUserInputs() {
@@ -113,7 +126,6 @@ export class MtspPageController {
         }
         return true;
     }
-
 
     solve(e) {
         if (!this.validateUserInputs()) {
@@ -148,11 +160,23 @@ export class MtspPageController {
                         console.log("Receiving solution:", data);
                         this.graphDrawer.setRoutes(data.routes);
                         this.result = data;
+                        this.fillResultSection('your', {
+                            salesmanNumber: data.routes.length,
+                            algorithm: this.algorithm,
+                            totalCost: data.totalCost,
+                            timeMs: data.totalTime,
+                        });
                     },
                     data => {
                         console.log("Received solution:", data);
                         this.graphDrawer.setRoutes(data.routes);
                         this.result = data;
+                        this.fillResultSection('your', {
+                            salesmanNumber: data.routes.length,
+                            algorithm: this.algorithm,
+                            totalCost: data.totalCost,
+                            timeMs: data.totalTime,
+                        });
                         this.switchToReadyMode();
                     }
                 );
