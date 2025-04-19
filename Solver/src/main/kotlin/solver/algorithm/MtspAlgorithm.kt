@@ -4,7 +4,6 @@ import kotlinx.coroutines.flow.Flow
 import solver.dto.AlgorithmSolution
 import solver.dto.Point
 import solver.dto.SolutionStatus
-import kotlin.math.min
 
 abstract class MtspAlgorithm {
 
@@ -26,21 +25,22 @@ abstract class MtspAlgorithm {
         routes.sumOf { calculateRouteDistance(distances, it) }
 
     protected fun distributeAmongSalesmen(salesmen: Int, points: List<Point>): Sequence<List<List<Point>>> = sequence {
-        val maxPartitionSize = points.size / salesmen
-        for (partition in generatePartitions(points, salesmen, maxPartitionSize)) {
+        for (partition in generatePartitions(points, salesmen)) {
             yield(partition)
         }
     }
 
-    protected fun generatePartitions(points: List<Point>, salesmen: Int, maxSize: Int): Sequence<List<List<Point>>> = sequence {
+    private fun generatePartitions(points: List<Point>, salesmen: Int): Sequence<List<List<Point>>> = sequence {
         if (salesmen == 1) {
-            yield(listOf(points))
+            if (points.isNotEmpty()) {
+                yield(listOf(points))
+            }
         } else {
-            val maxIndex = min(points.size, maxSize)
+            val maxIndex = points.size - (salesmen - 1)
             for (i in 1..maxIndex) {
                 val firstPartition = points.take(i)
                 val remaining = points.drop(i)
-                for (subPartition in generatePartitions(remaining, salesmen - 1, maxSize)) {
+                for (subPartition in generatePartitions(remaining, salesmen - 1)) {
                     yield(listOf(firstPartition) + subPartition)
                 }
             }

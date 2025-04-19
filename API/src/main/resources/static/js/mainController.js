@@ -78,8 +78,8 @@ export class MtspPageController {
             console.log(this.name);
         })
         .catch(err => {
-            //alert("Couldn't load map.");
-            //document.location.href = '/';
+            alert("Couldn't load map.");
+            document.location.href = '/create';
         });
     }
 
