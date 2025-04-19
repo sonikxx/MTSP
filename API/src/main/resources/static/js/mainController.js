@@ -109,8 +109,16 @@ export class MtspPageController {
     }
 
     fillResultSection(prefix, { salesmanNumber, algorithm, totalCost, timeMs }) {
+        let algorithmName = "unknown"
+        if (algorithm === "bruteForce") {
+            algorithmName = "Brute force"
+        } else if (algorithm === "python") {
+            algorithmName = "Simulated annealing (Python)"
+        } else if (algorithm === "genetic") {
+            algorithmName = "Genetic algorithm"
+        }
         document.getElementById(`${prefix}SalesmanCount`).textContent = salesmanNumber;
-        document.getElementById(`${prefix}Algorithm`).textContent = algorithm;
+        document.getElementById(`${prefix}Algorithm`).textContent = algorithmName;
         document.getElementById(`${prefix}TotalCost`).textContent = totalCost;
         document.getElementById(`${prefix}Time`).textContent = `${timeMs}ms`;
     }

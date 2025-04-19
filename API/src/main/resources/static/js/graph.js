@@ -118,42 +118,20 @@ export class GraphDrawer {
         this.drawPoints();
     }
 
-    //function to draw star with N spikes
-    //centered on a circle of radius R, centered on (cX,cY)
-    drawStar(R, cX, cY, N) {
-        this.ctx.beginPath();
-        this.ctx.fillStyle = this.mainColor;
-        this.ctx.moveTo(cX + R, cY);
-
-        for (let i = 1; i <= N * 2; i++) {
-            const theta = i * Math.PI / N;
-            const radius = (i % 2 === 0) ? R : R / 2;
-            const x = cX + radius * Math.cos(theta);
-            const y = cY + radius * Math.sin(theta);
-            this.ctx.lineTo(x, y);
-        }
-
-        this.ctx.closePath();
-        this.ctx.fill();
-        this.ctx.stroke();
-    }
-
-
     drawPoints() {
         this.drawGrid();
 
         this.drawRoutes();
 
         this.points.forEach((point, i) => {
-
+            this.ctx.beginPath();
+            this.ctx.arc(point.x, point.y, 5, 0, Math.PI * 2);
             if (i === 0) {
-                this.drawStar(10, point.x, point.y, 5);
+                this.ctx.fillStyle = this.mainColor;
             } else {
-                this.ctx.beginPath();
-                this.ctx.arc(point.x, point.y, 5, 0, Math.PI * 2);
                 this.ctx.fillStyle = "#60a5fa";
-                this.ctx.fill();
             }
+            this.ctx.fill();
 
 
             const text = point.name;
