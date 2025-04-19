@@ -6,5 +6,6 @@ data class MtspApiMap(
     val cities: List<City>,
     val distances: List<List<Double>>,
     val isPublic: Boolean = false,
-    val ownerName: String = ""
+    val ownerName: String = "",
+    val creationDate: String = ""
 )

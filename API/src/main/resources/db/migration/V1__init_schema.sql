@@ -36,6 +36,7 @@ CREATE TABLE mtsp_maps
     name      VARCHAR(255) NOT NULL,
     is_public BOOLEAN DEFAULT FALSE,
     points    TEXT         NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES mtsp_users (id) ON DELETE CASCADE
 );
 

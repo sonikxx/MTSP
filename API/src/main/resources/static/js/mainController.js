@@ -48,7 +48,6 @@ export class MtspPageController {
         this.algorithmSelect.addEventListener('change', (e) => this.algorithm = e.target.value);
 
         this.loadMap();
-        this.loadAvailableMaps();
     }
 
     switchToSolvingMode() {
@@ -81,17 +80,6 @@ export class MtspPageController {
             alert("Couldn't load map.");
             document.location.href = '/create';
         });
-    }
-
-    loadAvailableMaps() {
-        fetch(`/protected/v1/maps`)
-       .then(response => response.json())
-       .then(data => {
-           console.log(data);
-       })
-        .catch(err => {
-            console.log(err);
-        })
     }
 
     validateUserInputs() {

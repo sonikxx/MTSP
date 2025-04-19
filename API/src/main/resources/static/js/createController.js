@@ -5,6 +5,7 @@ class CreatePageController {
         this.fileInput = document.getElementById(fileInputId);
         this.saveButton = document.getElementById(saveButtonId);
         this.nameInput = document.getElementById('mapName');
+        this.allMapsContainer = document.getElementById('allMapsContainer');
 
         this.canvas = document.getElementById(canvasId);
         this.ctx = this.canvas.getContext('2d');
@@ -28,12 +29,47 @@ class CreatePageController {
             });
         });
 
+
+        this.loadUserInfo();
+        this.loadAvailableMaps();
+    }
+
+    loadUserInfo() {
         fetch('/protected/v1/info')
             .then(response => response.json())
             .then(data => {
                 document.getElementById('userName').textContent = data.userName;
             })
             .catch(err => console.log(err));
+    }
+
+    loadAvailableMaps() {
+
+        fetch('/protected/v1/maps')
+            .then(response => response.json())
+            .then(data => {
+
+                const template = document.getElementById('map-card-template');
+
+                this.allMapsContainer.innerHTML = ''; // Clear existing cards
+                let cnt = 0;
+                data.forEach(map => {
+                    const clone = template.content.cloneNode(true);
+                    const card = clone.querySelector('.card');
+                    card.href = `/main/${map.id}`;
+                    card.querySelector('.card-title').textContent = map.name;
+                    card.querySelector('.card-author').textContent = `Author: ${map.ownerName}`;
+                    card.querySelector('.card-data').textContent = `Creation date: ${map.creationDate}`;
+                    this.allMapsContainer.appendChild(clone);
+                    cnt++;
+                });
+                if (cnt !== 0) {
+                    document.getElementById('historyContainer').style.display = 'flex';
+                }
+            })
+            .catch(err => {
+                console.error('Failed to load maps:', err);
+            });
     }
 
     loadFile(e) {

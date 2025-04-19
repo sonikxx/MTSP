@@ -6,7 +6,9 @@ import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 
 interface MtspMapRepository : JpaRepository<MtspMap, Long> {
-    fun findByIdAndUserId(id: Long, userId: Long): MtspMap?
+    @Query("SELECT m FROM MtspMap m WHERE m.id = :id AND (m.userId = :userId OR m.isPublic = true)")
+    fun findAccessibleMapById(@Param("id") id: Long, @Param("userId") userId: Long): MtspMap?
+
 
     @Query("SELECT DISTINCT m FROM MtspMap m WHERE m.userId = :userId OR m.isPublic = true")
     fun findAllByUserIdOrIsPublicTrueDistinct(@Param("userId") userId: Long): List<MtspMap>

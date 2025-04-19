@@ -1,16 +1,9 @@
 package api.dto
 
 import api.converter.StringListConverter
-import jakarta.persistence.CascadeType
-import jakarta.persistence.Column
-import jakarta.persistence.Convert
-import jakarta.persistence.Entity
-import jakarta.persistence.FetchType
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
-import jakarta.persistence.Id
-import jakarta.persistence.OneToMany
-import jakarta.persistence.Table
+import jakarta.persistence.*
+import java.time.Instant
+
 
 @Entity
 @Table(name = "mtsp_maps")
@@ -34,6 +27,9 @@ class MtspMap() {
 
     @OneToMany(mappedBy = "map", cascade = [CascadeType.ALL], orphanRemoval = false, fetch = FetchType.LAZY)
     var edges: MutableList<MtspEdge> = mutableListOf()
+
+    @Column(name = "created_at", updatable = false, insertable = false, nullable = false)
+    var createdAt: Instant = Instant.now()
 
     constructor(
         userId: Long,

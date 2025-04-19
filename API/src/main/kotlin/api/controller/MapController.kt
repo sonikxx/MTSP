@@ -4,19 +4,18 @@ import api.dto.MtspApiMap
 import api.dto.MtspEdge
 import api.dto.MtspMap
 import api.repository.MtspMapRepository
+import api.repository.UserRepository
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestAttribute
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+
 
 @RestController
 @RequestMapping("/protected/v1")
 class MapController(
-    private val mtspMapRepository: MtspMapRepository
+    private val mtspMapRepository: MtspMapRepository,
+    private val userRepository: UserRepository
 ) {
     @PostMapping("save/map")
     fun save(
@@ -56,7 +55,7 @@ class MapController(
         @RequestAttribute(name = "userId") userId: Long,
         @RequestAttribute(name = "userName") username: String
     ): ResponseEntity<MtspApiMap> {
-        val map = mtspMapRepository.findByIdAndUserId(mapId, userId)
+        val map = mtspMapRepository.findAccessibleMapById(mapId, userId)
             ?: return ResponseEntity.notFound().build()
 
         val distances = Array(map.points.size) { Array(map.points.size) { Double.POSITIVE_INFINITY } }
@@ -81,6 +80,11 @@ class MapController(
         @RequestAttribute(name = "userId") userId: Long
     ): ResponseEntity<List<MtspApiMap>> {
         val maps = mtspMapRepository.findAllByUserIdOrIsPublicTrueDistinct(userId)
+        val formatter = DateTimeFormatter.ofPattern("dd.MM.yy HH:mm")
+            .withZone(ZoneId.of("Europe/Moscow"))
+
+        val userIds = maps.map { it.userId }.toSet()
+        val usersById = userRepository.findAllById(userIds).associateBy { it.id }
 
         return ResponseEntity.ok(
             maps.map { mtspMap ->
@@ -89,7 +93,9 @@ class MapController(
                     name = mtspMap.name,
                     cities = emptyList(),
                     distances = emptyList(),
-                    isPublic = mtspMap.isPublic
+                    isPublic = mtspMap.isPublic,
+                    ownerName = usersById[mtspMap.userId]?.email?: "Anonymous",
+                    creationDate = formatter.format(mtspMap.createdAt),
                 )
             }
         )
