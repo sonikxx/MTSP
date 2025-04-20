@@ -47,6 +47,7 @@ export class MtspPageController {
         this.salesmanNumberInput.addEventListener('change', (e) => this.salesmanNumber = e.target.value);
         this.algorithmSelect.addEventListener('change', (e) => this.algorithm = e.target.value);
 
+        this.loadUserInfo();
         this.loadMap();
     }
 
@@ -58,6 +59,8 @@ export class MtspPageController {
         this.solveButton.innerText = 'Solving...';
 
         this.downloadResultButton.disabled = true;
+        this.downloadResultButton.classList.remove('allowed-download');
+        this.downloadResultButton.classList.add('disabled-download');
     }
 
     switchToReadyMode() {
@@ -65,6 +68,17 @@ export class MtspPageController {
         this.solveButton.innerText = 'Solve';
 
         this.downloadResultButton.disabled = false;
+        this.downloadResultButton.classList.remove('disabled-download');
+        this.downloadResultButton.classList.add('allowed-download');
+    }
+
+    loadUserInfo() {
+        fetch('/protected/v1/info')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('userName').textContent = data.userName;
+            })
+            .catch(err => console.log(err));
     }
 
     loadMap() {
@@ -73,7 +87,8 @@ export class MtspPageController {
         .then(data => {
             this.graphDrawer.loadMap(data);
             this.name = data.name;
-            document.getElementById('userName').textContent = data.ownerName;
+            document.getElementById('mapTitleName').textContent = data.name;
+            document.getElementById('mapAuthorName').textContent = data.ownerName;
             this.loadBestSolution();
             console.log(this.name);
         })
@@ -207,9 +222,6 @@ export class MtspPageController {
     downloadResult(e) {
         if (this.result === null) {
             alert("You have to solve task before downloading result.");
-            return;
-        } else if (this.result.status !== 'SOLVED') {
-            alert("You have to wait until the result is ready.");
             return;
         }
 

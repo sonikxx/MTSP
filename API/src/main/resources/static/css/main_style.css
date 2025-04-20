@@ -119,7 +119,7 @@ canvas {
     appearance: none;
 }
 
-#solveMTSPButton {
+#solveMTSPButton, .allowed-download {
     background-color: #2563eb;
     color: white;
     border: none;
@@ -131,7 +131,7 @@ canvas {
     height: 44px;
 }
 
-#solveMTSPButton:hover {
+#solveMTSPButton:hover, .allowed-download:hover {
     background-color: #60a5fa;
 }
 
@@ -152,7 +152,7 @@ canvas {
     background-color: #FF8C00;
 }
 
-#downloadResultButton {
+.disabled-download {
     background-color: grey;
     color: white;
     border: none;
@@ -164,9 +164,11 @@ canvas {
     height: 44px;
 }
 
-#downloadResultButton:hover {
+.disabled-download:hover {
     background-color: grey;
 }
+
+
 
 .info {
     text-align: left;

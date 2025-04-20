@@ -53,7 +53,7 @@ class MapController(
     fun getMap(
         @PathVariable mapId: Long,
         @RequestAttribute(name = "userId") userId: Long,
-        @RequestAttribute(name = "userName") username: String
+        @RequestAttribute(name = "userName") myUsername: String
     ): ResponseEntity<MtspApiMap> {
         val map = mtspMapRepository.findAccessibleMapById(mapId, userId)
             ?: return ResponseEntity.notFound().build()
@@ -62,6 +62,12 @@ class MapController(
 
         for (edge in map.edges) {
             distances[edge.fromNode][edge.toNode] = edge.distance
+        }
+
+        val user = userRepository.findById(map.userId)
+        var username = "Anonymous"
+        if (!user.isEmpty) {
+            username = user.get().email
         }
 
         return ResponseEntity.ok(
