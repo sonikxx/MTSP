@@ -12,7 +12,8 @@ abstract class MtspAlgorithm {
     abstract fun solve(
         inputPoints: List<Point>,
         distances: Array<Array<Double>>,
-        numSalesmen: Int
+        numSalesmen: Int,
+        algorithmParams: Map<String, String> = emptyMap()
     ): Flow<Pair<SolutionStatus, AlgorithmSolution>>
 
     private fun distance(distances: Array<Array<Double>>, aId: Int, bId: Int): Double =

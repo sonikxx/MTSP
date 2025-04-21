@@ -58,7 +58,7 @@ canvas {
     margin-left: 30px;
 }
 
-.settings-container{
+.settings-container, .algorithm-params {
     display: flex;
     flex-direction: column;
 }

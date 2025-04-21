@@ -18,7 +18,7 @@ class TaskService(
             salesmanNumber = apiRequest.salesmanNumber,
             mapId = apiRequest.mapId,
             algorithm = apiRequest.algorithm,
-            algorithmParams = apiRequest.algorithmParams.toString()
+            algorithmParams = apiRequest.algorithmParams.entries.joinToString(",") { "${it.key}=${it.value}" }
         )
 
         return mtspRequestRepository.save(mtspRequest)

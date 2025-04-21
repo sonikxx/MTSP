@@ -7,6 +7,7 @@ import solver.dto.AlgorithmSolution
 import solver.dto.Point
 import solver.dto.SolutionStatus
 import kotlinx.coroutines.flow.flow
+import kotlin.math.max
 import kotlin.random.Random
 
 
@@ -18,15 +19,16 @@ class GeneticAlgorithm : MtspAlgorithm() {
     override fun solve(
         inputPoints: List<Point>,
         distances: Array<Array<Double>>,
-        numSalesmen: Int
+        numSalesmen: Int,
+        algorithmParams: Map<String, String>
     ): Flow<Pair<SolutionStatus, AlgorithmSolution>> = flow {
         logger.info { "Start genetic algorithm" }
         if (numSalesmen < 2 || inputPoints.size <= numSalesmen) return@flow
 
         val points = inputPoints.drop(1)
-        val populationSize = 500
-        val generations = 4000
-        val mutationRate = 0.05
+        val populationSize = max(2, (algorithmParams["populationSize"] ?: "500").toInt())
+        val generations = (algorithmParams["generations"] ?: "4000").toInt()
+        val mutationRate = (algorithmParams["mutationRate"] ?: "0.05").toDouble()
         val updateInterval = 25
 
         var population = generateInitialPopulation(populationSize, points, numSalesmen)

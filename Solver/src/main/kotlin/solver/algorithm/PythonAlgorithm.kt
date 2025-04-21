@@ -20,13 +20,14 @@ class PythonAlgorithm: MtspAlgorithm() {
     override fun solve(
         inputPoints: List<Point>,
         distances: Array<Array<Double>>,
-        numSalesmen: Int
+        numSalesmen: Int,
+        algorithmParams: Map<String, String>
     ): Flow<Pair<SolutionStatus, AlgorithmSolution>> = flow {
         val input = mapOf(
             "algorithm_name" to "SA",
             "params" to mapOf(
-                "distance_weight" to 1,
-                "balance_weight" to 20
+                "distance_weight" to (algorithmParams["distance_weight"] ?: "1").toInt(),
+                "balance_weight" to (algorithmParams["balance_weight"] ?: "20").toInt(),
             ),
             "number_of_salesmen" to numSalesmen,
             "distance_matrix" to distances.map { it.toList() }

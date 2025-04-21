@@ -73,9 +73,16 @@ class MtspSolverService(
             distances[edge.fromNode][edge.toNode] = edge.distance
         }
 
+        val algorithmParams = (request.algorithmParams ?: "").split(",")
+            .mapNotNull {
+                val parts = it.split("=")
+                if (parts.size == 2) parts[0] to parts[1] else null
+            }
+            .toMap()
+
         val scope = CoroutineScope(Dispatchers.Default)
         val solvingJob = scope.launch {
-            tspAlgorithm.solve(points, distances, request.salesmanNumber)
+            tspAlgorithm.solve(points, distances, request.salesmanNumber, algorithmParams)
                 .collect { (status, solution) ->
                     logger.info { "reqId = ${request.id} | best = ${solution.totalDistance} for size ${request.map.cities.size}" }
 

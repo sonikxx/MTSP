@@ -19,9 +19,7 @@ export class MtspPageController {
 
         this.salesmanNumber = this.salesmanNumberInput.value;
         this.algorithm = this.algorithmSelect.value;
-        this.algorithmParams = {
-            maxIterations: 1000,
-        }
+        this.algorithmParams = new Map();
         this.result = null;
 
         this.activePolling = null;
@@ -45,7 +43,12 @@ export class MtspPageController {
         this.canselButton.addEventListener('click', (e) => this.cancelRequest(e));
 
         this.salesmanNumberInput.addEventListener('change', (e) => this.salesmanNumber = e.target.value);
-        this.algorithmSelect.addEventListener('change', (e) => this.algorithm = e.target.value);
+        this.algorithmSelect.addEventListener('change', (e) => {
+            this.algorithm = e.target.value;
+            this.updateAlgorithmParams(e);
+        });
+
+        this.updateAlgorithmParams({ target: this.algorithmSelect});
 
         this.loadUserInfo();
         this.loadMap();
@@ -113,7 +116,6 @@ export class MtspPageController {
                         salesmanNumber: data.routes.length,
                     });
                     this.result = data;
-                    // Handle the solution (for example, draw the solution on the graph)
                 } else {
                     console.log("No solution found.");
                 }
@@ -165,7 +167,7 @@ export class MtspPageController {
                 mapId: this.mapId,
                 salesmanNumber: this.salesmanNumber,
                 algorithm: this.algorithm,
-                algorithmParams: this.algorithmParams
+                algorithmParams: Object.fromEntries(this.algorithmParams)
             })
         })
             .then(response => {
@@ -211,6 +213,7 @@ export class MtspPageController {
     }
 
     getResult() {
+        delete this.result.algorithm;
         return {
             result : this.result,
             salesmanNumber : this.salesmanNumber,
@@ -312,6 +315,66 @@ export class MtspPageController {
             alert("An error occurred while cancelling.");
         });
     }
+
+    updateAlgorithmParams(e) {
+        const paramsConfig = {
+            bruteForce: {
+                maxIterations: { label: "Max Iterations", type: "number", min: -1, value: -1 }
+            },
+            genetic: {
+                populationSize: { label: "Population Size", type: "number", min: 2, max: 500, value: 300 },
+                generations: { label: "Generations", type: "number", min: 1, max: 4000, value: 1000 },
+                mutationRate: { label: "Mutation Rate", type: "number", step: 0.01, min: 0.01, max: 1.0, value: 0.05 }
+            },
+            python: {
+                distance_weight: { label: "Distance Weight", type: "number", min: 1, max: 40, value: 10 },
+                balance_weight: { label: "Balance Weight", type: "number", min: 1, max: 10, value: 5 }
+            }
+        };
+
+        const selectedAlgorithm = e.target.value;
+        this.algorithmParams.clear(); // Reset stored params for new algorithm
+
+        const container = document.getElementById("algorithmParams");
+        container.innerHTML = ""; // Clear old fields
+
+        const params = paramsConfig[selectedAlgorithm];
+        for (const [key, config] of Object.entries(params)) {
+            const wrapper = document.createElement("div");
+            wrapper.className = "input-field";
+
+            const label = document.createElement("label");
+            label.className = "input-label";
+            label.htmlFor = key;
+            label.innerText = config.label;
+
+            const input = document.createElement("input");
+            input.type = config.type;
+            input.id = key;
+            input.name = key;
+            input.value = config.value ?? "";
+            if (config.min !== undefined) input.min = config.min;
+            if (config.max !== undefined) input.max = config.max;
+            if (config.step !== undefined) input.step = config.step;
+            input.className = "input-number";
+
+            // Initial store
+            this.algorithmParams.set(key, input.value);
+
+            // Update on input change
+            input.addEventListener("input", () => {
+                this.algorithmParams.set(key, input.value);
+                console.log(`Updated param: ${key} = ${input.value}`);
+            });
+
+            wrapper.appendChild(label);
+            wrapper.appendChild(input);
+            container.appendChild(wrapper);
+        }
+
+        console.log(this.algorithmParams);
+    }
+
 }
 
 
