@@ -10,7 +10,7 @@
 <body>
 <div class="login-container">
     <h2>Register</h2>
-    <form id="register-form">
+    <form id="register-form" method="POST">
         <label for="firstName">First name</label>
         <input type="text" id="firstName" name="firstName" required>
 
@@ -24,17 +24,17 @@
         <input type="password" id="password" name="password" required>
 
         <label for="confirm-password">Confirm Password</label>
-        <input type="password" id="confirm-password" name="confirm-password" required>
+        <input type="password" id="confirm-password" name="confirm-password" required style="margin-bottom: 20px;">
 
-        <button type="submit">Register</button>
+        <button>Register</button>
     </form>
 </div>
-</body>
+
+<script src="https://www.google.com/recaptcha/api.js?render=6LcxbSYrAAAAAN3n4tK8o9h4IJJj1cXgozYxuDAo"></script>
 
 <script>
     document.getElementById("register-form").addEventListener("submit", async function(event) {
         event.preventDefault();
-
         const firstName = document.getElementById("firstName").value;
         const lastName = document.getElementById("lastName").value;
         const email = document.getElementById("email").value;
@@ -46,11 +46,20 @@
             return;
         }
 
+        // Get reCAPTCHA v3 token
+        grecaptcha.ready(function() {
+            grecaptcha.execute('6LcxbSYrAAAAAN3n4tK8o9h4IJJj1cXgozYxuDAo', { action: 'submit' }).then(function(token) {
+                registerUser(firstName, lastName, email, password, token);
+            });
+        });
+    });
+
+    async function registerUser(firstName, lastName, email, password, recaptchaToken) {
         try {
             const response = await fetch("/auth/register", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ firstName, lastName, email, password }),
+                body: JSON.stringify({ firstName, lastName, email, password, recaptchaToken }),
             });
 
             if (response.redirected) {
@@ -62,6 +71,8 @@
         } catch (error) {
             alert("Registration failed: " + error.message);
         }
-    });
+    }
 </script>
+
+</body>
 </html>
