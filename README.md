@@ -45,6 +45,9 @@
   – Docker
   – Google reCAPTCHA
 
+## Схема базы данных
+<img src="https://github.com/user-attachments/assets/f6663e24-4507-42b7-9bcc-6bfc93b1bb77" width="600">
+
 ## Установка и запуск
 
 1. **Клонирование репозитория**:
@@ -85,13 +88,13 @@
         "points": [
           {
             "name": "Point 1",
-            "lat": 55.75,
-            "lon": 37.62
+            "x": 55.75,
+            "y": 37.62
           },
           {
             "name": "Point 2",
-            "lat": 55.76,
-            "lon": 37.63
+            "x": 55.76,
+            "y": 37.63
           }
         ],
         distances: [
@@ -132,13 +135,11 @@
   - В ответ клиент получает набор маршрутов для коммивояжеров, суммарную стоимость, название алгоритма и время его работы
 
 ## Веб интерфейс
-Интерфейс регистрации
-<img width="1723" alt="image" src="https://github.com/user-attachments/assets/be624b9e-1dc6-4f90-a499-c79c3fbb1ba0" />
+Интерфейс регистрации\
+<img src="https://github.com/user-attachments/assets/be624b9e-1dc6-4f90-a499-c79c3fbb1ba0" width="900">
 
-Создание карты или выбор из существующих
-![image](https://github.com/user-attachments/assets/76be7bf7-0919-4182-b737-25103842ba0c)
+Создание карты или выбор из существующих\
+<img src="https://github.com/user-attachments/assets/76be7bf7-0919-4182-b737-25103842ba0c" width="900">
 
-Процесс решения задачи MTSP
-![image](https://github.com/user-attachments/assets/500b27a7-bf98-42ec-876b-86e7b5441b83)
-
-
+Процесс решения задачи MTSP\
+<img src="https://github.com/user-attachments/assets/500b27a7-bf98-42ec-876b-86e7b5441b83" width="900">
