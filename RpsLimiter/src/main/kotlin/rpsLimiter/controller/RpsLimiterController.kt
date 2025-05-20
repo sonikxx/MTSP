@@ -18,7 +18,7 @@ class RpsLimiterController(
     fun checkAndIncreaseQuota(@RequestParam quota: String): ResponseEntity<String> =
         when (rateLimiterService.tryConsume(quota)) {
             true -> ResponseEntity.ok("OK")
-            false -> ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
+            false -> ResponseEntity.status(HttpStatus.OK)
                 .body("Quota exceeded for: $quota. Try again later.")
         }
 }
