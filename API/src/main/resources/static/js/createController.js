@@ -76,6 +76,15 @@ class CreatePageController {
 
         this.graphDrawer.clearAll();
         const file = e.target.files[0];
+
+        const maxSizeInBytes = 1 * 1024 * 1024; // 1 MB
+
+        if (file.size > maxSizeInBytes) {
+            alert("Файл слишком большой. Максимальный размер — 1 МБ.");
+            this.fileInput.value = "";
+            return;
+        }
+
         const reader = new FileReader();
 
         reader.onload = (e) => {

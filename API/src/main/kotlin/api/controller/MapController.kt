@@ -5,8 +5,10 @@ import api.dto.MtspEdge
 import api.dto.MtspMap
 import api.repository.MtspMapRepository
 import api.repository.UserRepository
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.server.ResponseStatusException
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
@@ -22,6 +24,31 @@ class MapController(
         @RequestBody request: MtspApiMap,
         @RequestAttribute(name = "userId") userId: Long
     ): ResponseEntity<Map<String, Long>> {
+        val cityCount = request.cities.size
+
+        if (cityCount < 2 || cityCount > 1000) {
+            throw ResponseStatusException(
+                HttpStatus.BAD_REQUEST,
+                "Cities count must be between 2 and 1000"
+            )
+        }
+
+        if (request.distances.size != cityCount) {
+            throw ResponseStatusException(
+                HttpStatus.BAD_REQUEST,
+                "Distances matrix must have the same number of rows as there are cities"
+            )
+        }
+
+        request.distances.forEachIndexed { rowIndex, row ->
+            if (row.size != cityCount) {
+                throw ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Distances matrix row $rowIndex must have exactly $cityCount columns"
+                )
+            }
+        }
+
         val map = MtspMap(
             userId = userId,
             name = request.name,

@@ -62,7 +62,17 @@ class GeneticAlgorithm : MtspAlgorithm() {
     ): List<List<List<Point>>> {
         return List(size) {
             val shuffled = cities.shuffled()
-            distributeAmongSalesmen(numSalesmen, shuffled).first()
+            val baseSize = cities.size / numSalesmen
+            val remainder = cities.size % numSalesmen
+
+            var index = 0
+            List(numSalesmen) { i ->
+                val extra = if (i < remainder) 1 else 0
+                val end = index + baseSize + extra
+                val part = shuffled.subList(index, end)
+                index = end
+                part
+            }
         }
     }
 
@@ -143,9 +153,18 @@ class GeneticAlgorithm : MtspAlgorithm() {
                 result[index] = result[index].shuffled().toMutableList()
             }
             2 -> {
-                val fromIndex = result.indices.random()
-                val toIndex = result.indices.random()
-                if (fromIndex != toIndex && result[fromIndex].size > 1) {
+                val fromCandidates = result.withIndex()
+                    .filter { it.value.size > 1 }
+                    .map { it.index }
+
+                if (fromCandidates.isNotEmpty()) {
+                    val fromIndex = fromCandidates.random()
+                    var toIndex = result.indices.random()
+
+                    while (toIndex == fromIndex) {
+                        toIndex = result.indices.random()
+                    }
+
                     val point = result[fromIndex].removeAt(result[fromIndex].indices.random())
                     result[toIndex].add(point)
                 }

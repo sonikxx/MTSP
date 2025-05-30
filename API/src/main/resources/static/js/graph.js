@@ -14,7 +14,13 @@ export class GraphDrawer {
             '#FFA500',
             '#FFD700',
             '#32CD32',
-            '#FF69B4'
+            '#FF69B4',
+            '#ff3c11',
+            '#ad33ff',
+            '#1ABC9C',
+            '#E91E63',
+            '#2ECC71',
+            '#9ac6ef',
         ];
         this.mainColor = '#fd6535';
 
