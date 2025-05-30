@@ -36,6 +36,7 @@ export class MtspPageController {
             alert("Please login first.");
             return;
         }
+
         this.mapId = pathParts[2];
 
         this.solveButton.addEventListener('click', (e) => this.solve(e));
